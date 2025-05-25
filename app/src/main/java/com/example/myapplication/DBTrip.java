@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.myapplication.ui.MyLocation;
-
 import java.util.ArrayList;
 
 public class DBTrip {
@@ -150,7 +148,7 @@ public class DBTrip {
     }
 
     public ArrayList<MyLocation> selectAllLocations() {
-        Cursor mCursor = mDataBase.query(TABLE_TRIPS, null, null, null, null, null, null);
+        Cursor mCursor = mDataBase.query(TABLE_LOCATION, null, null, null, null, null, null);
 
         ArrayList<MyLocation> arr = new ArrayList<MyLocation>();
         mCursor.moveToFirst();

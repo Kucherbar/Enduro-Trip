@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -25,8 +24,10 @@ import androidx.fragment.app.Fragment;
 
 
 import com.example.myapplication.DBTrip;
-import com.example.myapplication.R;
+import com.example.myapplication.Trip;
 import com.example.myapplication.databinding.FragmentHomeBinding;
+
+import java.util.ArrayList;
 
 public class HomeFragment extends Fragment implements SensorEventListener {
     TextView averageSpeedTV;
@@ -52,17 +53,16 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     double currentLongitude;
     double lastLatitude;
     double lastLongitude;
+    int timeCode;
+    long startTime;
+    long endTime;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
-                               ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         TextView textView = binding.textHome;
         startTripBut = binding.startTrip;
-        averageSpeedTV = binding.averageSpeed;
-        maxSpeedTV = binding.MaxSpeed;
-        timeTV = binding.time;
-        distanceTV = binding.distance;
-        tripTime = 1000;
 
         Timer timer = new Timer();
         startTripBut.setOnClickListener(new View.OnClickListener() {
@@ -73,21 +73,25 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
                 if (i % 2 != 0) {
                     i++;
-                    startTripBut.setText("Завершить поездку");
+                    lastLatitude = currentLatitude;
+                    lastLongitude = currentLongitude;
                     timer.start();
+                    startTime = System.currentTimeMillis();
+                    startTripBut.setText("Завершить поездку");
                 } else {
                     i++;
                     startTripBut.setText("Начать поездку");
                     timer.cancel();
+                    endTime = System.currentTimeMillis();
                     timer.onFinish();
+
                 }
             }
         });
         dbSQLite = new DBTrip(getContext());
-        if (!dbSQLite.selectAllLocations().isEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                idTrip = dbSQLite.selectAllLocations().getLast().getIdTrips() + 1;
-            }
+        ArrayList<Trip> arr = new ArrayList<>(dbSQLite.selectAllTrips());
+        if (!arr.isEmpty()) {
+            idTrip = arr.get(arr.size() - 1).getId() + 1;
         }
         else idTrip = 1;
 
@@ -122,28 +126,43 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         }
         @Override
         public void onTick(long millisUntilFinished) {
-            dbSQLite.insert(currentLatitude,currentLongitude,speed,tripTime,idTrip);
+            if (lastLongitude == 0 && lastLatitude == 0) {
+                lastLatitude = currentLatitude;
+                lastLongitude = currentLongitude;
+                return;
+            }
             updateDistance();
+            updateTime();
             updateAverageSpeed();
             updateMaxSpeed();
+//            if( !((lastLatitude == currentLatitude && lastLongitude == currentLongitude) || (tripDistance / 1000 <= 1)) ) {
+            dbSQLite.insert(currentLatitude,currentLongitude,speed,timeCode / 1000,idTrip);
+//            }
         }
 
         @Override
         public void onFinish() {
-            dbSQLite.insert("Trip" + idTrip,(int) (tripDistance),1,tripAverageSpeed,tripMaxSpeed);
-            idTrip++;
+            tripTime = (int) (endTime - startTime) / 1000;
+            dbSQLite.insert("Trip" + idTrip,(int) (tripDistance),tripTime,tripAverageSpeed,tripMaxSpeed);
+            idTrip = idTrip + 1;
+            tripDistance = 0;
+            tripAverageSpeed = 0;
+            tripMaxSpeed = 0;
+            tripTime = 0;
         }
     }
 
 
+    public int calculateDistance() {
+        return (int) (tripDistance = tripDistance + (111.2 * Math.acos(Math.sin(currentLatitude) * Math.sin(lastLatitude)
+                        + Math.cos(currentLatitude) * Math.cos(lastLatitude) * Math.cos(lastLongitude - currentLongitude))));
+    }
     public void updateDistance() {
-        tripDistance = tripDistance + (111.2 * Math.acos(Math.sin(currentLatitude) * Math.sin(lastLatitude)
-                + Math.cos(currentLatitude) * Math.cos(lastLatitude) * Math.cos(lastLongitude - currentLongitude)));
+        calculateDistance();
         lastLatitude = currentLatitude;
-        lastLongitude = currentLatitude;
+        lastLongitude = currentLongitude;
         distanceTV = binding.distance;
-        distanceTV.setText(tripDistance + "");
-
+        distanceTV.setText((int) (tripDistance) + "");
     }
     public void updateAverageSpeed() {
         tripAverageSpeed = (int) (tripDistance / (tripTime / 1000));
@@ -155,6 +174,21 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         if (tripMaxSpeed < speed) tripMaxSpeed = speed;
         maxSpeedTV = binding.MaxSpeed;
         maxSpeedTV.setText(tripMaxSpeed + "");
+    }
+    public void updateTime() {
+        timeCode = (int)(System.currentTimeMillis() - startTime);
+        timeTV = binding.time;
+        String hour,minute,sec;
+        if (timeCode >= 3600000 && timeCode / 3600000 < 10) hour = "0" + timeCode / 3600000 + ":";
+        else if (timeCode >= 3600000 && timeCode / 3600000 >= 10) hour = timeCode / 3600000 + ":";
+        else hour = "";
+        if (timeCode >= 60000 && timeCode / 60000 < 10) minute = "0" + timeCode / 60000 + ":";
+        else if (timeCode >= 60000 && timeCode / 60000 >= 10) minute = timeCode / 60000 + ":";
+        else minute = "00:";
+        if (timeCode >= 1000 && timeCode / 1000 < 10) sec = "0" + timeCode / 1000;
+        else if (timeCode >= 1000 && timeCode / 1000 >= 10) sec = timeCode / 1000 + "";
+        else sec = "00";
+        timeTV.setText(hour + minute + sec);
     }
 
 
