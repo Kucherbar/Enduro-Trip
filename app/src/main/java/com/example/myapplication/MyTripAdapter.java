@@ -5,13 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class MyTripAdapter extends ArrayAdapter<Trip> {
-    public MyTripAdapter(@NonNull Context context, int resource) {
-        super(context, resource);
+    public MyTripAdapter(@NonNull Context context, ArrayList<Trip> resource) {
+        super(context,R.layout.trip_item, resource);
     }
 
     @NonNull
@@ -21,6 +24,17 @@ public class MyTripAdapter extends ArrayAdapter<Trip> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.trip_item, null);
         }
         Trip trip = getItem(position);
+        TextView titleTV = convertView.findViewById(R.id.titleName);
+        titleTV.setText(trip.getName());
+        TextView distanceTV = convertView.findViewById(R.id.distance1);
+        distanceTV.setText(trip.getDistance() + "");
+        TextView timeTV = convertView.findViewById(R.id.time1);
+        timeTV.setText(trip.getTime() / 60 + " минут");
+        TextView averageSpeedTV = convertView.findViewById(R.id.averageSpeed1);
+        averageSpeedTV.setText(trip.getAverageSpeed() + "");
+        TextView maxSpeedTV = convertView.findViewById(R.id.maxSpeed1);
+        maxSpeedTV.setText(trip.getMaxSpeed() + "");
+
         return convertView;
     }
 }

@@ -18,9 +18,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+
 
 
 import com.example.myapplication.DBTrip;
@@ -45,7 +47,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     double tripDistance;
     int tripMaxSpeed;
     int tripAverageSpeed;
-    int tripName;
+    static String tripName = "null";
     int speed;
 
 
@@ -71,20 +73,21 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View v) {
 
-                if (i % 2 != 0) {
+                if (i % 2 != 0) {                    // Начало поездки
                     i++;
                     lastLatitude = currentLatitude;
                     lastLongitude = currentLongitude;
+                    MyDialogFragment dialogFragment = new MyDialogFragment();
+                    dialogFragment.show(getActivity().getSupportFragmentManager(), "Trip name dialog");// Название не передается
                     timer.start();
                     startTime = System.currentTimeMillis();
                     startTripBut.setText("Завершить поездку");
-                } else {
+                } else {                                       // Конец поездки
                     i++;
-                    startTripBut.setText("Начать поездку");
                     timer.cancel();
                     endTime = System.currentTimeMillis();
+                    startTripBut.setText("Начать поездку");
                     timer.onFinish();
-
                 }
             }
         });
@@ -100,8 +103,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                speed = (int) location.getSpeed();
-               currentLatitude = location.getLatitude();//1 градус = 88км при (37 градусами)
-               currentLongitude = location.getLongitude();//1градус = 111.3км
+               currentLatitude = location.getLatitude();
+               currentLongitude = location.getLongitude();
 
                 textView.setText("latitude: " + currentLatitude + "\nlongitude: " + currentLongitude + "\nspeed: " + speed);
             }
@@ -143,16 +146,22 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         @Override
         public void onFinish() {
             tripTime = (int) (endTime - startTime) / 1000;
-            dbSQLite.insert("Trip" + idTrip,(int) (tripDistance),tripTime,tripAverageSpeed,tripMaxSpeed);
+            dbSQLite.insert(tripName,(int) (tripDistance),tripTime,tripAverageSpeed,tripMaxSpeed);
             idTrip = idTrip + 1;
-            tripDistance = 0;
-            tripAverageSpeed = 0;
-            tripMaxSpeed = 0;
-            tripTime = 0;
+            nullifyAll();
         }
     }
 
-
+    public void nullifyAll() {
+        lastLatitude = currentLatitude = 0;
+        lastLongitude = currentLongitude = 0;
+        tripMaxSpeed = 0;
+        timeTV = binding.time;
+        timeTV.setText("00:00");
+        updateDistance();
+        updateAverageSpeed();
+        updateMaxSpeed();
+    }
     public int calculateDistance() {
         return (int) (tripDistance = tripDistance + (111.2 * Math.acos(Math.sin(currentLatitude) * Math.sin(lastLatitude)
                         + Math.cos(currentLatitude) * Math.cos(lastLatitude) * Math.cos(lastLongitude - currentLongitude))));
@@ -206,5 +215,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+    public static void setTripName(String tripname) {
+        HomeFragment.tripName = tripname;
     }
 }
