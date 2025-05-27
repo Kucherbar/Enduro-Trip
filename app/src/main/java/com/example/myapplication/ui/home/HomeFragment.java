@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     int tripMaxSpeed;
     int tripAverageSpeed;
     static String tripName = "null";
-    int speed;
+    double speed;
 
 
     double currentLatitude;
@@ -102,7 +102,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-               speed = (int) location.getSpeed();
+               speed = location.getSpeed();
                currentLatitude = location.getLatitude();
                currentLongitude = location.getLongitude();
 
@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             updateAverageSpeed();
             updateMaxSpeed();
 //            if( !((lastLatitude == currentLatitude && lastLongitude == currentLongitude) || (tripDistance / 1000 <= 1)) ) {
-            dbSQLite.insert(currentLatitude,currentLongitude,speed,timeCode / 1000,idTrip);
+            dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,timeCode / 1000,idTrip);
 //            }
         }
 
@@ -180,7 +180,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
     }
     public void updateMaxSpeed() {
-        if (tripMaxSpeed < speed) tripMaxSpeed = speed;
+        if (tripMaxSpeed < speed) tripMaxSpeed = (int)speed;
         maxSpeedTV = binding.MaxSpeed;
         maxSpeedTV.setText(tripMaxSpeed + "");
     }
