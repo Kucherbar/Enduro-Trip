@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class DBTrip {
 
-    private static final String DATABASE_NAME = "simple.db";
+    private static final String DATABASE_NAME = "new.simple.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_LOCATION = "tableLocation";
     private static final String TABLE_TRIPS = "tableTrips";
@@ -26,6 +26,7 @@ public class DBTrip {
     private static final String COLUMN_TIME = "Time";
     private static final String COLUMN_DISTANCE = "Distance";
     private static final String COLUMN_NAME = "Name";
+    private static final String COLUMN_DATE = "Date";
 
 
     private static final int NUM_COLUMN_ID = 0;
@@ -35,6 +36,7 @@ public class DBTrip {
     private static final int NUM_COLUMN_TIME_CODE = 4;
     private static final int NUM_COLUMN_IDTRIPS = 5;
     private static final int NUM_COLUMN_NAME = 1;
+    private static final int NUM_COLUMN_DATE = 6;
     private static final int NUM_COLUMN_DISTANCE = 2;
     private static final int NUM_COLUMN_TIME = 3;
     private static final int NUM_COLUMN_AVERAGE_SPEED = 4;
@@ -56,13 +58,14 @@ public class DBTrip {
         cv.put(COLUMN_IDTRIPS,idTrips);
         return mDataBase.insert(TABLE_LOCATION, null, cv);
     }
-    public long insert(String name,int distance,int time,int averageSpeed,int maxSpeed) {
-        ContentValues cv=new ContentValues();
+    public long insert(String name,int distance,int time,int averageSpeed,int maxSpeed,String date) {
+        ContentValues cv= new ContentValues();
         cv.put(COLUMN_NAME, name);
         cv.put(COLUMN_DISTANCE, distance);
         cv.put(COLUMN_TIME, time);
         cv.put(COLUMN_AVERAGE_SPEED,averageSpeed);
         cv.put(COLUMN_MAX_SPEED,maxSpeed);
+        cv.put(COLUMN_DATE,date);
         return mDataBase.insert(TABLE_TRIPS, null, cv);
     }
 
@@ -73,6 +76,7 @@ public class DBTrip {
         cv.put(COLUMN_TIME, trip.getTime());
         cv.put(COLUMN_AVERAGE_SPEED,trip.getAverageSpeed());
         cv.put(COLUMN_MAX_SPEED,trip.getMaxSpeed());
+        cv.put(COLUMN_DATE,trip.getDate());
         return mDataBase.update(TABLE_TRIPS, cv, COLUMN_ID + " = ?",new String[] { String.valueOf(trip.getId())});
     }
 
@@ -109,7 +113,8 @@ public class DBTrip {
         int time = mCursor.getInt(NUM_COLUMN_TIME);
         int averageSpeed =mCursor.getInt(NUM_COLUMN_AVERAGE_SPEED);
         int maxSpeed =mCursor.getInt(NUM_COLUMN_MAX_SPEED);
-        return new Trip(id, name, distance, time,averageSpeed,maxSpeed);
+        String date = mCursor.getString(NUM_COLUMN_DATE);
+        return new Trip(id, name, distance, time,averageSpeed,maxSpeed, date);
     }
     public ArrayList<MyLocation> selectLocations(long idTrips) {
         Cursor mCursor = mDataBase.query(TABLE_LOCATION, null, COLUMN_IDTRIPS + " = " + idTrips, new String[]{String.valueOf(idTrips)}, null, null, null);
@@ -141,7 +146,8 @@ public class DBTrip {
                 int time = mCursor.getInt(NUM_COLUMN_TIME);
                 int averageSpeed =mCursor.getInt(NUM_COLUMN_AVERAGE_SPEED);
                 int maxSpeed =mCursor.getInt(NUM_COLUMN_MAX_SPEED);
-                arr.add(new Trip(id, name, distance, time,averageSpeed,maxSpeed));
+                String date = mCursor.getString(NUM_COLUMN_DATE);
+                arr.add(new Trip(id, name, distance, time,averageSpeed,maxSpeed,date));
             } while (mCursor.moveToNext());
         }
         return arr;
@@ -186,7 +192,8 @@ public class DBTrip {
                     COLUMN_DISTANCE + " INTEGER, " +
                     COLUMN_TIME+ " INTEGER, " +
                     COLUMN_AVERAGE_SPEED + " INTEGER, " +
-                    COLUMN_MAX_SPEED + " INETEGER);";
+                    COLUMN_MAX_SPEED + " INETEGER," +
+                    COLUMN_DATE + " TEXT);";
             db.execSQL(tableTrips);
             db.execSQL(tableLocation);
         }

@@ -34,6 +34,8 @@ public class MyTripAdapter extends ArrayAdapter<Trip> {
         averageSpeedTV.setText(trip.getAverageSpeed() + "");
         TextView maxSpeedTV = convertView.findViewById(R.id.maxSpeed1);
         maxSpeedTV.setText(trip.getMaxSpeed() + "");
+        TextView dateTV= convertView.findViewById(R.id.date);
+        dateTV.setText(trip.getDate());
 
         return convertView;
     }

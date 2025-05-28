@@ -9,14 +9,24 @@ public class Trip implements Serializable {
     private int time;
     private int maxSpeed;
     private int averageSpeed;
+    private String date;
 
-    public Trip(long id, String name, int distance, int time, int maxSpeed, int averageSpeed) {
+    public Trip(long id, String name, int distance, int time, int averageSpeed, int maxSpeed, String date) {
         this.id = id;
         this.name = name;
         this.distance = distance;
         this.time = time;
         this.maxSpeed = maxSpeed;
         this.averageSpeed = averageSpeed;
+        this.date = date;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public long getId() {
