@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public static final double EARTH_RADIUS =  6371;
     public static double MinDistanceDif = 0.02;
     public static final double MINDISTANCEDIF_VALUE_LOW = 0.02;
-    public static final double MINDISTANCEDIF_VALUE_HIGH = 0.1;
+    public static final double MINDISTANCEDIF_VALUE_HIGH = 0.2;
     TextView averageSpeedTV;
     TextView maxSpeedTV;
     TextView timeTV;
@@ -70,6 +70,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     double currentLongitude;
     double lastLatitude;
     double lastLongitude;
+    double lastLt;
+    double lastLng;
     long startTime;
     long endTime;
     long lastTimeStamp;
@@ -137,27 +139,28 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                speed = location.getSpeed();
+//                speed = location.getSpeed();
                 MainActivity.onFirstLocation += 1;
                 if (MainActivity.onFirstLocation == 1) {
                     HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_HIGH;
                 }
-                calculateMaxSpeed();
                 currentLatitude = location.getLatitude();
                 currentLongitude = location.getLongitude();
-                curTimeStamp = System.currentTimeMillis();
-                double s = speed;
-                s = s - s % 1;
-//                double distance1 = calculateDistance(lastLt, lastLng,currentLatitude,currentLongitude);
-//                long time = curTimeStamp - lastTimeStamp;
-//                speed  = distance1 / time;
-//                i = (i.doubleValue() * 1000 - i.doubleValue() * 1000 % 1) / 1000;
-//                speed =  i;
-//
-//                lastLt = currentLatitude;
-//                lastLng = currentLongitude;
+                curTimeStamp = System.currentTimeMillis()/1000;
+//                double s = speed;
+//                s = s - s % 1;
+                double distance1 = calculateDistance(lastLt, lastLng,currentLatitude,currentLongitude) * 1000;
+                long time = curTimeStamp - lastTimeStamp;
+                if (time < 1) return;
+                Double j  = distance1/ time ;//м.с
+                j = j * 3.6;
+                speed =  ((int) (j*10))/10.0;
+
+                lastLt = currentLatitude;
+                lastLng = currentLongitude;
                 lastTimeStamp = curTimeStamp;//"latitude: " + currentLatitude + "\nlongitude: " + currentLongitude +
-                textView.setText("\nspeed: " + s);
+                textView.setText("\nspeed: " + speed);
+                calculateMaxSpeed();
             }
         };
         return root;
@@ -281,22 +284,22 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         }
         return tripDistance;
     }
-//    public double calculateDistance(double lastLatitude, double lastLongitude, double currentLatitude, double currentLongitude) {
-////        if (!(currentLatitude == 0 || currentLongitude == 0 || lastLongitude == 0 || lastLatitude == 0))
-////
-////            tripDistance = tripDistance + (111.2 * Math.acos(Math.sin(currentLatitude) * Math.sin(lastLatitude)
-//        double lat1Rad = Math.toRadians(lastLatitude);
-//        double lat2Rad = Math.toRadians(currentLatitude);
-//        double lon1Rad = Math.toRadians(lastLongitude);
-//        double lon2Rad = Math.toRadians(currentLongitude);
-//        double distance = 0;
-//        double x = (lon2Rad - lon1Rad) * Math.cos((lat1Rad + lat2Rad) / 2);
-//        double y = (lat2Rad - lat1Rad);
-//        if (!(currentLatitude == 0 || currentLongitude == 0 || lastLongitude == 0 || lastLatitude == 0)) {
-//            distance = Math.sqrt(x * x + y * y) * EARTH_RADIUS;
-//        }
-//        return distance;
-//    }
+    public double calculateDistance(double lastLatitude, double lastLongitude, double currentLatitude, double currentLongitude) {
+//        if (!(currentLatitude == 0 || currentLongitude == 0 || lastLongitude == 0 || lastLatitude == 0))
+//
+//            tripDistance = tripDistance + (111.2 * Math.acos(Math.sin(currentLatitude) * Math.sin(lastLatitude)
+        double lat1Rad = Math.toRadians(lastLatitude);
+        double lat2Rad = Math.toRadians(currentLatitude);
+        double lon1Rad = Math.toRadians(lastLongitude);
+        double lon2Rad = Math.toRadians(currentLongitude);
+        double distance = 0;
+        double x = (lon2Rad - lon1Rad) * Math.cos((lat1Rad + lat2Rad) / 2);
+        double y = (lat2Rad - lat1Rad);
+        if (!(currentLatitude == 0 || currentLongitude == 0 || lastLongitude == 0 || lastLatitude == 0)) {
+            distance = Math.sqrt(x * x + y * y) * EARTH_RADIUS;
+        }
+        return distance;
+    }
     public int calculateAverageSpeed() {
         return tripAverageSpeed = (int) ((tripDistance / (double) tripTime ) * 3600000);
     }
@@ -309,7 +312,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void updateDistance() {
         distanceTV = binding.distance;
         double distanceText = tripDistance;
-        distanceTV.setText(((distanceText * 1000 - distanceText * 1000 % 1) / 1000) + "");
+        distanceText = ((distanceText * 1000 - distanceText * 1000 % 1) / 1000);
+        distanceTV.setText(distanceText + "");
     }
     public void updateAverageSpeed() {
         averageSpeedTV = binding.averageSpeed;
