@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Enduro trip</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Speedometer</string>
+    <string name="title_dashboard">Map</string>
+    <string name="title_notifications">Trips</string>
     <string name="setName">Set name</string>
     <string name="cansel">Cansel</string>
 </resources>

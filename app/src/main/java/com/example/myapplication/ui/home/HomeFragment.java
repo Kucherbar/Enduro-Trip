@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     int tripMaxSpeed = 0;
     int tripAverageSpeed;
     String tripDate;
-    static String tripName = "null";
+    static String tripName = "Нет названия";
     double speed;
 
 
@@ -239,6 +239,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         public void onFinish() {
             tripTime = (int) (endTime - startTime) / 1000;
             tripDate = new java.util.Date().toString();
+            Scanner sc = new Scanner(tripDate);
+            tripDate = sc.next() + " " + sc.next() + " " + sc.next();
             dbSQLite.insert(tripName,(int) (tripDistance),tripTime,tripAverageSpeed,tripMaxSpeed,tripDate);
             idTrip = idTrip + 1;
             nullifyAll();
