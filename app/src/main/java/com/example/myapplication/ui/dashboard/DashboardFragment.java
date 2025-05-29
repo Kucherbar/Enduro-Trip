@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication.databinding.FragmentDashboardBinding;
 
-public class DashboardFragment extends Fragment {
+public class  DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
 

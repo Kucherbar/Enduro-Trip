@@ -22,6 +22,7 @@ import com.example.myapplication.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     public static int butChecker = 1;
+    public static int onFirstLocation = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

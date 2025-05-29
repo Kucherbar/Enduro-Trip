@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -44,6 +45,13 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.espresso.core)
+    implementation(libs.play.services.maps)
+    implementation(files("C:\\Users\\Legion\\Downloads\\yandex_mapkit-4.1.0.tar.gz"))
+    implementation(fileTree(mapOf(
+        "dir" to "C:\\Users\\Legion\\Downloads\\yandex_mapkit-4.1.0",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("*.aar", "*.jar")
+    )))
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
