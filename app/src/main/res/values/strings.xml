@@ -5,4 +5,6 @@
     <string name="title_notifications">Trips</string>
     <string name="setName">Set name</string>
     <string name="cansel">Cansel</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.dashboard;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.se.omapi.Session;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.directions.DirectionsFactory;
@@ -18,9 +22,13 @@ import com.yandex.mapkit.directions.driving.DrivingRoute;
 import com.yandex.mapkit.directions.driving.DrivingSection;
 import com.yandex.mapkit.directions.driving.DrivingSession;
 import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.map.Map;
+import com.yandex.mapkit.map.MapObject;
 import com.yandex.mapkit.map.MapObjectCollection;
+import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.runtime.Error;
+import com.yandex.runtime.image.ImageProvider;
 
 import java.util.List;
 
@@ -42,17 +50,14 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+            binding = FragmentDashboardBinding.inflate(inflater, container, false);
+            View root = binding.getRoot();
+            MapKitFactory.initialize(getContext());
+            mapView = binding.mapView;
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        MapKitFactory.initialize(getContext());
-        mapView = binding.mapView;
+            return root;
+        }
 
-
-//        drivingRoute = DirectionsFactory.getInstance().createDrivingRouter();
-//        mapObjects = mapView.map.
-        return root;
-    }
 
     @Override
     public void onStart() {

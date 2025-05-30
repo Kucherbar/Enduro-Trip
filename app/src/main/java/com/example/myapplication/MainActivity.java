@@ -12,18 +12,21 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.yandex.mapkit.MapKitFactory;
+import com.yandex.mapkit.geometry.Direction;
 
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     public static int butChecker = 1;
     public static int onFirstLocation = 0;
+    public static boolean tripRouteChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

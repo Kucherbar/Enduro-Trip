@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.myapplication.ui.dashboard.DashboardFragment;
 
 import java.util.ArrayList;
 
@@ -36,6 +39,8 @@ public class MyTripAdapter extends ArrayAdapter<Trip> {
         maxSpeedTV.setText(trip.getMaxSpeed() + "");
         TextView dateTV= convertView.findViewById(R.id.date);
         dateTV.setText(trip.getDate());
+        TextView tripID = convertView.findViewById(R.id.tripID);
+        tripID.setText(trip.getId() + "");
 
         return convertView;
     }

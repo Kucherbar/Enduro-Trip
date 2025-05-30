@@ -42,7 +42,7 @@ import java.util.Scanner;
 public class HomeFragment extends Fragment implements SensorEventListener {
     public static final double EARTH_RADIUS =  6371;
     public static double MinDistanceDif = 0.02;
-    public static final double MINDISTANCEDIF_VALUE_LOW = 0.02;
+    public static final double MINDISTANCEDIF_VALUE_LOW = 0.01;
     public static final double MINDISTANCEDIF_VALUE_HIGH = 0.2;
     TextView averageSpeedTV;
     TextView maxSpeedTV;
@@ -129,11 +129,16 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             }
         });
         dbSQLite = new DBTrip(getContext());
+//        dbSQLite.deleteTableLocation();
+//        dbSQLite.deleteTableTrips();
         ArrayList<Trip> arr = new ArrayList<>(dbSQLite.selectAllTrips());
         if (!arr.isEmpty()) {
             idTrip = arr.get(arr.size() - 1).getId() + 1;
         }
-        else idTrip = 1;
+        else{
+            dbSQLite.insert("0",0,0,0,0,"0");
+            idTrip = arr.get(arr.size() - 1).getId() + 1;
+        }
 
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -310,6 +315,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         return tripTime = (int)(System.currentTimeMillis() - startTime);
     }
     public void updateDistance() {
+        if (distanceDif > HomeFragment.MinDistanceDif) return;
         distanceTV = binding.distance;
         double distanceText = tripDistance;
         distanceText = ((distanceText * 1000 - distanceText * 1000 % 1) / 1000);

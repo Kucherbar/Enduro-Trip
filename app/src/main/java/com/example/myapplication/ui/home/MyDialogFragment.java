@@ -32,6 +32,7 @@ public class MyDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = inflater.inflate(R.layout.dialog_name, null);
 
+
         builder.setView(v)
                 // Add action buttons
                 .setPositiveButton(R.string.setName, new DialogInterface.OnClickListener() {
