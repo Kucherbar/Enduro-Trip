@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.ViewGroup;
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     public static int butChecker = 1;
     public static int onFirstLocation = 0;
     public static boolean checker;
+    @SuppressLint("ResourceAsColor")
+    public static int polylineColor = (R.color.black);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -83,6 +83,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     CountDownTimer calculateTimer;
 
     int i;
+    int j;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -139,8 +140,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             idTrip = arr.get(arr.size() - 1).getId() + 1;
         }
         else{
-            dbSQLite.insert("0",0,0,0,0,"0");
-            idTrip = arr.get(arr.size() - 1).getId() + 1;
+            idTrip = 1;
         }
 
 
@@ -196,7 +196,6 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 }
                 else {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                    Toast.makeText(getContext(),"GPS is working", Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (Exception e) {
@@ -249,6 +248,10 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             if( ((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > HomeFragment.MinDistanceDif)) ) {
             dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
             startTimeAvSp = System.currentTimeMillis();
+            j++;
+            } else if(distanceDif != 0 && j == 0) {
+                dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
+                j++;
             }
         }
 

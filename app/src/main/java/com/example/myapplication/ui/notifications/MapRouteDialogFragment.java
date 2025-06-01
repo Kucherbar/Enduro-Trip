@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.myapplication.DBTrip;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.MyLocation;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
@@ -75,13 +76,14 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
 
         //Enduro mark
         PlacemarkMapObject placemarkStart = mapView.getMap().getMapObjects()
-                .addPlacemark(new Point(arr.get(0).getLatidute(), arr.get(0).getLongitude()), enduroImg);
+                .addPlacemark(new Point(arr.get(0).getLatidute(), arr.get(0).getLongitude()));
+        placemarkStart.setIcon(enduroImg);
 
         placemarkStart.addTapListener(listener);
         placemarkStart.setUserData(new Integer(arr.get(0).getSpeed()));
 
         IconStyle iconStyleStart = new IconStyle().setTappableArea(new Rect(new PointF(50F,50f),new PointF(50F,50f)))
-                        .setAnchor(new PointF(0.3f,0.7f));
+                        .setAnchor(new PointF(0.3f,0.7f));//.setScale(0.065f)
         placemarkStart.setIconStyle(iconStyleStart);
         //
 
@@ -93,11 +95,11 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
         placemarkFinish.setUserData(new Integer(arr.get(arr.size() - 1).getSpeed()));
 
         IconStyle iconFlagStyle = new IconStyle()
-                .setAnchor(new PointF(0.2f,0.9f));
+                .setAnchor(new PointF(0.2f,0.9f));//.setScale(0.065f)
         IconStyle iconPointStyle = new IconStyle()
                 .setAnchor(new PointF(0.5f,0.6f)).setScale(0.3f);
 
-        placemarkFinish.useCompositeIcon().setIcon("Flag", flagImg, iconFlagStyle);
+        placemarkFinish.useCompositeIcon().setIcon("Flag",flagImg, iconFlagStyle);
         placemarkFinish.useCompositeIcon().setIcon("Point", pointImg, iconPointStyle);
         //
 
@@ -117,7 +119,7 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
         }
         Polyline polyline = new Polyline(pointArr);
         PolylineMapObject polylineMapObject = mapView.getMap().getMapObjects().addPolyline(polyline);
-        polylineMapObject.setStrokeColor(R.color.green);
+        polylineMapObject.setStrokeColor(MainActivity.polylineColor);
         mapView.getMap().move(new CameraPosition(new Point(arr.get(0).getLatidute(),arr.get(0).getLongitude())
                 ,17.0f, 150.0f,30.0f));
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class DBTrip {
 
-    private static final String DATABASE_NAME = "new.simple.db";
+    private static final String DATABASE_NAME = "simple.V1.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_LOCATION = "tableLocation";
     private static final String TABLE_TRIPS = "tableTrips";
@@ -171,7 +171,21 @@ public class DBTrip {
         }
         return arr;
     }
+    public MyLocation selectLastLocation() {
+        Cursor mCursor = mDataBase.query(TABLE_LOCATION, null, null, null, null, null, null);
 
+        ArrayList<MyLocation> arr = new ArrayList<MyLocation>();
+        mCursor.moveToLast();
+                long id = mCursor.getInt(NUM_COLUMN_ID);
+                double latidute = mCursor.getDouble(NUM_COLUMN_LATITUDE);
+                double longitude = mCursor.getDouble(NUM_COLUMN_LONGITUDE);
+                int speed = mCursor.getInt(NUM_COLUMN_SPEED);
+                int timeCode = mCursor.getInt(NUM_COLUMN_TIME_CODE);
+                long idTrips = mCursor.getLong(NUM_COLUMN_IDTRIPS);
+                MyLocation location = new MyLocation(id,latidute,longitude,speed,timeCode,idTrips);
+
+        return location;
+    }
     private class OpenHelper extends SQLiteOpenHelper {
 
         OpenHelper(Context context) {

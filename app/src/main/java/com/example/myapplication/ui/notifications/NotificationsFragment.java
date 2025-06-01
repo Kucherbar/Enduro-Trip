@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,7 +41,7 @@ public class NotificationsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        check = true;
+        Toast.makeText(getContext(),"Нажмите чтобы увидеть поездку", Toast.LENGTH_SHORT).show();
         dbSQLite = new DBTrip(getContext());
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -48,17 +49,21 @@ public class NotificationsFragment extends Fragment {
         list = dbSQLite.selectAllTrips();
         ArrayAdapter<Trip> adapter = new MyTripAdapter(getActivity(), list);
         lv.setAdapter(adapter);
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TripItemBinding tripItemBinding = TripItemBinding.bind(view);
-                long tripID = Integer.valueOf(tripItemBinding.tripID.getText() + "") ;
+                long tripID = Integer.valueOf(tripItemBinding.tripID.getText() + "");
+                if (dbSQLite.selectLocations(tripID).size() == 0) {
+                    Toast.makeText(getContext(),"У поездки нет точек локации", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 MapRouteDialogFragment map = new MapRouteDialogFragment();
                 map.show(getActivity().getSupportFragmentManager(), tripID + "");
 //                Bundle bundle = new Bundle();
 //                bundle.putLong("tripId",tripID);
 //                Navigation.findNavController(view).navigate(R.id.navigation_dashboard,bundle);
-                return true;
             }
         });
         return root;

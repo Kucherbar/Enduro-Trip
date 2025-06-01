@@ -27,9 +27,6 @@ public class MyTripAdapter extends ArrayAdapter<Trip> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.trip_item, null);
         }
         Trip trip = getItem(position);
-        if (trip.getName() == "0") {
-            return null;
-        }
         TextView titleTV = convertView.findViewById(R.id.titleName);
         titleTV.setText(trip.getName());
         TextView distanceTV = convertView.findViewById(R.id.distance1);

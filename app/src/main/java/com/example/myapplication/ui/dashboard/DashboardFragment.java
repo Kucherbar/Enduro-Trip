@@ -1,6 +1,18 @@
 package com.example.myapplication.ui.dashboard;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Parcelable;
 import android.se.omapi.Session;
 import android.util.Log;
@@ -8,50 +20,73 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.example.myapplication.DBTrip;
 import com.example.myapplication.MainActivity;
+import com.example.myapplication.MyLocation;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
+import com.yandex.mapkit.RequestPoint;
+import com.yandex.mapkit.RequestPointType;
 import com.yandex.mapkit.directions.DirectionsFactory;
+import com.yandex.mapkit.directions.driving.DrivingOptions;
 import com.yandex.mapkit.directions.driving.DrivingRoute;
+import com.yandex.mapkit.directions.driving.DrivingRouter;
+import com.yandex.mapkit.directions.driving.DrivingRouterType;
 import com.yandex.mapkit.directions.driving.DrivingSection;
 import com.yandex.mapkit.directions.driving.DrivingSession;
+import com.yandex.mapkit.directions.driving.VehicleOptions;
+import com.yandex.mapkit.directions.driving.VehicleType;
 import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.location.Location;
-import com.yandex.mapkit.location.LocationListener;
-import com.yandex.mapkit.location.LocationStatus;
+import com.yandex.mapkit.geometry.Polyline;
+import com.yandex.mapkit.location.SubscriptionSettings;
 import com.yandex.mapkit.map.CameraPosition;
+import com.yandex.mapkit.map.IconStyle;
+import com.yandex.mapkit.map.InputListener;
 import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.MapObject;
 import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.PlacemarkMapObject;
+import com.yandex.mapkit.map.PolylineMapObject;
 import com.yandex.mapkit.mapview.MapView;
+import com.yandex.mapkit.places.panorama.IconImageFactory;
+import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.runtime.Error;
 import com.yandex.runtime.image.ImageProvider;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class  DashboardFragment extends Fragment implements DrivingSession.DrivingRouteListener {
+public class  DashboardFragment extends Fragment implements DrivingSession.DrivingRouteListener, SensorEventListener {
     private MapView mapView;
-    Session session;
-    Point ROUTE_START_LOCATION = new Point(47.229410,39.718281);
-    Point ROUTE_END_LOCATION = new Point(47.214004,39.794605);
-    Point SCREEN_CENTER = new Point(
-            (ROUTE_START_LOCATION.getLatitude()
-                    + ROUTE_END_LOCATION.getLatitude())/2,
-            (ROUTE_START_LOCATION.getLongitude()
-            + ROUTE_END_LOCATION.getLongitude())/2);
+    LocationManager locationManager;
+    LocationListener locationListener;
+    DrivingRouter drivingRouter;
+    DrivingOptions drivingOptions;
+    VehicleOptions vehicleOptions;
+    DrivingSession.DrivingRouteListener routeListener;
+    InputListener inputListener = null;
+    DrivingSession drivingSession;
+    PlacemarkMapObject currentPlacemark;
     MapObjectCollection mapObjects = null;
-    DrivingRoute drivingRoute = null;
-    DrivingSection drivingSection = null;
+    ArrayList<RequestPoint> buildPoints;
+    PolylineMapObject polylineRoute;
+    DBTrip dbSQLite;
+    static CameraPosition cameraOnStart;
+    static Polyline polyline;
+    static int tapChecker;
+    int i;
 
     private FragmentDashboardBinding binding;
 
@@ -60,35 +95,111 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
             binding = FragmentDashboardBinding.inflate(inflater, container, false);
             MapKitFactory.initialize(getContext());
             mapView = binding.mapView;
-        MapKit mapKit = MapKitFactory.getInstance();
+            dbSQLite = new DBTrip(getContext());
+            if (cameraOnStart != null)  mapView.getMap().move(cameraOnStart);
+            else {
+                MyLocation location = dbSQLite.selectLastLocation();
+                Point point = new Point(location.getLatidute(), location.getLongitude());
+                mapView.getMap().move(new CameraPosition(point, 8.0f, 150.0f, 30.0f));
+            }
+            if (polyline != null && tapChecker % 2 != 0) {
+                polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
+                polylineRoute.setStrokeColor(MainActivity.polylineColor);
+            }
+//        MapKit mapKit = MapKitFactory.getInstance();
 
-        mapKit.createLocationManager().requestSingleUpdate(new LocationListener() {
+//        mapKit.createLocationManager().requestSingleUpdate(locationListener);
+        mapObjects = mapView.getMap().getMapObjects();
+        ImageProvider enduroImg = ImageProvider.fromResource(getContext(), R.drawable.ic_enduro_on_two_wheels);
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        IconStyle iconStyle = new IconStyle().setScale(0.08f);
+        i = 0;
+        locationListener = new LocationListener() {
             @Override
-            public void onLocationUpdated(@NonNull Location location) {
-                Log.d("TagCheck", "LocationUpdated " + location.getPosition().getLongitude());
-                Log.d("TagCheck", "LocationUpdated " + location.getPosition().getLatitude());
-                mapView.getMap().move(
-                        new CameraPosition(location.getPosition(), 14.0f, 0.0f, 0.0f),
-                        new Animation(Animation.Type.SMOOTH, 1),
-                        null);
+            public void onLocationChanged(@NonNull Location location) {
+                if (i != 0) {
+                    mapObjects.remove(currentPlacemark);
+                }
+                currentPlacemark = mapView.getMap().getMapObjects().addPlacemark(new Point(location.getLatitude(), location.getLongitude()));
+                currentPlacemark.setIcon(enduroImg);
+                currentPlacemark.setIconStyle(iconStyle);
+                if(i == 0 && cameraOnStart == null) mapView.getMap().move(new CameraPosition(new Point(location.getLatitude(), location.getLongitude())
+                        , 14.0f, 150.0f, 30.0f));
+                i++;
+            }
+        };
 
+        inputListener = new InputListener() {
+            @Override
+            public void onMapTap(@NonNull Map map, @NonNull Point point) {
+                if (currentPlacemark != null && tapChecker % 2 ==  0) {
+                    buildPoints = new ArrayList<>();
+                    buildPoints.add(new RequestPoint((new Point(currentPlacemark.getGeometry().getLatitude(), currentPlacemark.getGeometry().getLongitude())),
+                            RequestPointType.WAYPOINT,
+                            null,
+                            null,
+                            null));
+                    buildPoints.add(new RequestPoint(point,
+                            RequestPointType.WAYPOINT,
+                            null,
+                            null,
+                            null));
+                    showRoute();
+                    tapChecker++;
+                }else if (tapChecker % 2 !=  0) {
+                    mapObjects.remove(polylineRoute);
+                    tapChecker++;
+                };
             }
 
             @Override
-            public void onLocationStatusUpdated(@NonNull LocationStatus locationStatus) {
+            public void onMapLongTap(@NonNull Map map, @NonNull Point point) {
 
             }
-        });
+        };
+        mapView.getMap().addInputListener(inputListener);
+
+        drivingRouter =  DirectionsFactory.getInstance().createDrivingRouter(DrivingRouterType.ONLINE);
+        drivingOptions = new DrivingOptions().setRoutesCount(1);
+        vehicleOptions = new VehicleOptions().setVehicleType(VehicleType.MOTO);
 
 
-//        mapView.getMap().move(new CameraPosition(new Point(55.49482053145766,47.485265638679266)
-//                ,17.0f, 150.0f,30.0f));
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getContext(),"GPS isn't working", Toast.LENGTH_LONG).show();
 
+        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (!locationManager.isLocationEnabled()) {
+                    Toast.makeText(getContext(),"location isn't turned up", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         View root = binding.getRoot();
             return root;
         }
 
+        public void showRoute() {
 
+            drivingSession = drivingRouter.requestRoutes(buildPoints, drivingOptions, vehicleOptions,new DrivingSession.DrivingRouteListener() {
+                @Override
+                public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
+                    polyline = new Polyline(( list.get(0).getGeometry().getPoints()));
+                    polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
+                    polylineRoute.setStrokeColor(MainActivity.polylineColor);
+                }
+
+                @Override
+                public void onDrivingRoutesError(@NonNull Error error) {
+                    Toast.makeText(getContext(),"ошибка", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     @Override
     public void onStart() {
         super.onStart();
@@ -101,6 +212,7 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
     public void onStop() {
         super.onStop();
         MapKitFactory.getInstance().onStop();
+        cameraOnStart = mapView.getMap().getCameraPosition();
         mapView.onStop();
     }
 
@@ -110,6 +222,14 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
         binding = null;
     }
 
+    Session session;
+    Point ROUTE_START_LOCATION = new Point(47.229410,39.718281);
+    Point ROUTE_END_LOCATION = new Point(47.214004,39.794605);
+    Point SCREEN_CENTER = new Point(
+            (ROUTE_START_LOCATION.getLatitude()
+                    + ROUTE_END_LOCATION.getLatitude())/2,
+            (ROUTE_START_LOCATION.getLongitude()
+                    + ROUTE_END_LOCATION.getLongitude())/2);
     @Override
     public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
 
@@ -117,6 +237,16 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
 
     @Override
     public void onDrivingRoutesError(@NonNull Error error) {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 }
