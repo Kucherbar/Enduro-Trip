@@ -116,8 +116,8 @@ public class DBTrip {
         String date = mCursor.getString(NUM_COLUMN_DATE);
         return new Trip(id, name, distance, time,averageSpeed,maxSpeed, date);
     }
-    public ArrayList<MyLocation> selectLocations(long idTrips) {
-        Cursor mCursor = mDataBase.query(TABLE_LOCATION, null, COLUMN_IDTRIPS + " = " + idTrips, new String[]{String.valueOf(idTrips)}, null, null, null);
+    public ArrayList<MyLocation> selectLocations(Long idTrips) {
+        Cursor mCursor = mDataBase.query(TABLE_LOCATION, null, COLUMN_IDTRIPS + "=?", new String[]{String.valueOf(idTrips)}, null, null, null);
         ArrayList<MyLocation> arrLocations = new ArrayList<>();
         mCursor.moveToFirst();
         if (!mCursor.isAfterLast()) {

@@ -73,14 +73,16 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     double lastLt;
     double lastLng;
     long startTime;
+    long startTimeAvSp;
     long endTime;
+    long endTimeAvSp;
     long lastTimeStamp;
     long curTimeStamp;
     double distanceDif;
     Timer timer;
     CountDownTimer calculateTimer;
 
-    int i = 0;
+    int i;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -90,6 +92,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         TextView textView = binding.textHome;
         startTripBut = binding.startTrip;
         timer = new Timer();
+        i = 0;
         startTripBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +106,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                         @Override
                         public void onTick(long millisUntilFinished) {
                             i++;
-                            if (i == 10) HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_LOW;
+                            if (i == 30) HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_LOW;
 
                             calculateTime();
                             calculateDistance();
@@ -156,14 +159,19 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 //                s = s - s % 1;
                 double distance1 = calculateDistance(lastLt, lastLng,currentLatitude,currentLongitude) * 1000;
                 long time = curTimeStamp - lastTimeStamp;
-                if (time < 1) return;
                 Double j  = distance1/ time ;//м.с
                 j = j * 3.6;
+                if (time < 1) return;
                 speed =  ((int) (j*10))/10.0;
 
                 lastLt = currentLatitude;
                 lastLng = currentLongitude;
                 lastTimeStamp = curTimeStamp;//"latitude: " + currentLatitude + "\nlongitude: " + currentLongitude +
+                if (i <= 15 && speed > 5) {
+                    textView.setText("\nspeed: " + 0.0);
+                    return;
+
+                }
                 textView.setText("\nspeed: " + speed);
                 calculateMaxSpeed();
             }
@@ -238,8 +246,9 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             updateDistance();
             updateAverageSpeed();
             updateMaxSpeed();
-            if( ((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif < HomeFragment.MinDistanceDif)) ) {
+            if( ((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > HomeFragment.MinDistanceDif)) ) {
             dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
+            startTimeAvSp = System.currentTimeMillis();
             }
         }
 
@@ -285,6 +294,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 tripDistance = tripDistance + distanceDif;
                 lastLatitude = currentLatitude;
                 lastLongitude = currentLongitude;
+                endTimeAvSp = System.currentTimeMillis();
             }
         }
         return tripDistance;
@@ -306,7 +316,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         return distance;
     }
     public int calculateAverageSpeed() {
-        return tripAverageSpeed = (int) ((tripDistance / (double) tripTime ) * 3600000);
+        return tripAverageSpeed = (int) ((tripDistance / (double) endTimeAvSp - startTimeAvSp ) * 3600000);
     }
     public void calculateMaxSpeed() {
         if ( tripMaxSpeed < speed) tripMaxSpeed = (int) speed;

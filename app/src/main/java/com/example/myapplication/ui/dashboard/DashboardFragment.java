@@ -3,6 +3,7 @@ package com.example.myapplication.ui.dashboard;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.se.omapi.Session;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,18 @@ import androidx.navigation.Navigation;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
+import com.yandex.mapkit.Animation;
+import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.directions.DirectionsFactory;
 import com.yandex.mapkit.directions.driving.DrivingRoute;
 import com.yandex.mapkit.directions.driving.DrivingSection;
 import com.yandex.mapkit.directions.driving.DrivingSession;
 import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.location.Location;
+import com.yandex.mapkit.location.LocationListener;
+import com.yandex.mapkit.location.LocationStatus;
+import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.MapObject;
 import com.yandex.mapkit.map.MapObjectCollection;
@@ -51,10 +58,33 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
             binding = FragmentDashboardBinding.inflate(inflater, container, false);
-            View root = binding.getRoot();
             MapKitFactory.initialize(getContext());
             mapView = binding.mapView;
+        MapKit mapKit = MapKitFactory.getInstance();
 
+        mapKit.createLocationManager().requestSingleUpdate(new LocationListener() {
+            @Override
+            public void onLocationUpdated(@NonNull Location location) {
+                Log.d("TagCheck", "LocationUpdated " + location.getPosition().getLongitude());
+                Log.d("TagCheck", "LocationUpdated " + location.getPosition().getLatitude());
+                mapView.getMap().move(
+                        new CameraPosition(location.getPosition(), 14.0f, 0.0f, 0.0f),
+                        new Animation(Animation.Type.SMOOTH, 1),
+                        null);
+
+            }
+
+            @Override
+            public void onLocationStatusUpdated(@NonNull LocationStatus locationStatus) {
+
+            }
+        });
+
+
+//        mapView.getMap().move(new CameraPosition(new Point(55.49482053145766,47.485265638679266)
+//                ,17.0f, 150.0f,30.0f));
+
+        View root = binding.getRoot();
             return root;
         }
 
@@ -64,6 +94,7 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
         super.onStart();
         MapKitFactory.getInstance().onStart();
         mapView.onStart();
+
     }
 
     @Override

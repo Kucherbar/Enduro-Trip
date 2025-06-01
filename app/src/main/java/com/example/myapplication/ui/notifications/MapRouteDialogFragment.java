@@ -2,6 +2,7 @@ package com.example.myapplication.ui.notifications;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.myapplication.DBTrip;
@@ -17,15 +19,18 @@ import com.example.myapplication.MyLocation;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.example.myapplication.databinding.MapRouteBinding;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.directions.driving.DrivingRoute;
 import com.yandex.mapkit.directions.driving.DrivingSession;
 import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.IconStyle;
 import com.yandex.mapkit.map.MapObject;
 import com.yandex.mapkit.map.MapObjectTapListener;
 import com.yandex.mapkit.map.PlacemarkMapObject;
+import com.yandex.mapkit.map.PolylineMapObject;
 import com.yandex.mapkit.map.Rect;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.runtime.Error;
@@ -41,14 +46,19 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        MapKitFactory.initialize(getContext());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        binding = binding.inflate(inflater, null, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = inflater.inflate(R.layout.map_route, null);
         builder.setView(v);
+        binding = binding.inflate(inflater, null , false);
+        mapView = v.findViewById(R.id.map_route_view);
 
-        mapView = binding.mapRouteView;
+        MapKitFactory.initialize(getContext());
+
+        dbSQLite = new DBTrip(getContext());
+
+
+
         ArrayList<MyLocation> arr = dbSQLite.selectLocations(Long.valueOf(getTag()));
 
         MapObjectTapListener listener = new MapObjectTapListener() {
@@ -58,20 +68,56 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
                 return false;
             }
         };
-        for (int i = 0; i <= arr.toArray().length; i++) {
-            ImageProvider imageProvider = ImageProvider.fromResource(getContext(), R.drawable.ic_mark_red);
-            PlacemarkMapObject placemark = mapView.getMap().getMapObjects()
-                    .addPlacemark(new Point(arr.get(i).getLatidute(), arr.get(i).getLongitude()), imageProvider);
-            placemark.addTapListener(listener);
-            placemark.setUserData(new Integer(arr.get(i).getSpeed()));
-            placemark.setIconStyle(new IconStyle().setTappableArea(new Rect()));
-            IconStyle iconStyleEnduro = new IconStyle();
-            iconStyleEnduro.setAnchor(new PointF(0.5f, 1.0f)).setScale(0.9f);
-            placemark.useCompositeIcon().setIcon("enduro",ImageProvider.fromResource(getContext(),R.drawable.ic_enduro_black), iconStyleEnduro);
-            IconStyle iconStyleRoad = new IconStyle();
-            iconStyleRoad.setAnchor(new PointF(0.5f, 0.5f)).setScale(0.5f);
-            placemark.useCompositeIcon().setIcon("road",ImageProvider.fromResource(getContext(),R.drawable.ic_circle_road), iconStyleRoad);
+        ImageProvider enduroImg = ImageProvider.fromResource(getContext(), R.drawable.ic_enduro);
+        ImageProvider flagImg = ImageProvider.fromResource(getContext(), R.drawable.ic_flag_finish);
+        ImageProvider pointImg = ImageProvider.fromResource(getContext(), R.drawable.ic_point_black);
+
+
+        //Enduro mark
+        PlacemarkMapObject placemarkStart = mapView.getMap().getMapObjects()
+                .addPlacemark(new Point(arr.get(0).getLatidute(), arr.get(0).getLongitude()), enduroImg);
+
+        placemarkStart.addTapListener(listener);
+        placemarkStart.setUserData(new Integer(arr.get(0).getSpeed()));
+
+        IconStyle iconStyleStart = new IconStyle().setTappableArea(new Rect(new PointF(50F,50f),new PointF(50F,50f)))
+                        .setAnchor(new PointF(0.3f,0.7f));
+        placemarkStart.setIconStyle(iconStyleStart);
+        //
+
+        //Finish flag mark
+        PlacemarkMapObject placemarkFinish = mapView.getMap().getMapObjects()
+                .addPlacemark(new Point(arr.get(arr.size() - 1).getLatidute(), arr.get(arr.size() - 1).getLongitude()));
+
+        placemarkFinish.addTapListener(listener);
+        placemarkFinish.setUserData(new Integer(arr.get(arr.size() - 1).getSpeed()));
+
+        IconStyle iconFlagStyle = new IconStyle()
+                .setAnchor(new PointF(0.2f,0.9f));
+        IconStyle iconPointStyle = new IconStyle()
+                .setAnchor(new PointF(0.5f,0.6f)).setScale(0.3f);
+
+        placemarkFinish.useCompositeIcon().setIcon("Flag", flagImg, iconFlagStyle);
+        placemarkFinish.useCompositeIcon().setIcon("Point", pointImg, iconPointStyle);
+        //
+
+
+        ArrayList<Point> pointArr = new ArrayList<>();
+
+        for (int i = 0; i < arr.toArray().length; i++) {
+            Point point = new Point((arr.get(i).getLatidute()), arr.get(i).getLongitude());
+            pointArr.add(point);
+//            placemark.setIconStyle(new IconStyle());
+//            IconStyle iconStyleEnduro = new IconStyle();
+//            iconStyleEnduro.setScale(0.9f).setAnchor(new PointF(0.5f, 1.0f)).setZIndex(1f);
+//            placemark.useCompositeIcon().setIcon("enduro",ImageProvider.fromResource(getContext(),R.drawable.ic_enduro_black), iconStyleEnduro);
+//            IconStyle iconStyleRoad = new IconStyle();
+//            iconStyleRoad.setScale(0.5f).setAnchor(new PointF(0.9f, 1.0f)).setZIndex(2F);
+//            placemark.useCompositeIcon().setIcon("road",ImageProvider.fromResource(getContext(),R.drawable.ic_road_circle_black), iconStyleRoad);
         }
+        Polyline polyline = new Polyline(pointArr);
+        PolylineMapObject polylineMapObject = mapView.getMap().getMapObjects().addPolyline(polyline);
+        polylineMapObject.setStrokeColor(R.color.green);
         mapView.getMap().move(new CameraPosition(new Point(arr.get(0).getLatidute(),arr.get(0).getLongitude())
                 ,17.0f, 150.0f,30.0f));
 

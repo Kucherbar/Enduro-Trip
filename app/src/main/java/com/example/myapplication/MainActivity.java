@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     public static int butChecker = 1;
     public static int onFirstLocation = 0;
-    public static boolean tripRouteChecker;
+    public static boolean checker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
