@@ -98,9 +98,12 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
             dbSQLite = new DBTrip(getContext());
             if (cameraOnStart != null)  mapView.getMap().move(cameraOnStart);
             else {
+
                 MyLocation location = dbSQLite.selectLastLocation();
-                Point point = new Point(location.getLatidute(), location.getLongitude());
-                mapView.getMap().move(new CameraPosition(point, 8.0f, 150.0f, 30.0f));
+                if (!(location == null)) {
+                    Point point = new Point(location.getLatidute(), location.getLongitude());
+                    mapView.getMap().move(new CameraPosition(point, 8.0f, 150.0f, 30.0f));
+                }
             }
             if (polyline != null && tapChecker % 2 != 0) {
                 polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);

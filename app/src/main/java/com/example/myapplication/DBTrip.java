@@ -176,15 +176,18 @@ public class DBTrip {
 
         ArrayList<MyLocation> arr = new ArrayList<MyLocation>();
         mCursor.moveToLast();
+
+        if (!mCursor.isAfterLast()) {
                 long id = mCursor.getInt(NUM_COLUMN_ID);
                 double latidute = mCursor.getDouble(NUM_COLUMN_LATITUDE);
                 double longitude = mCursor.getDouble(NUM_COLUMN_LONGITUDE);
                 int speed = mCursor.getInt(NUM_COLUMN_SPEED);
                 int timeCode = mCursor.getInt(NUM_COLUMN_TIME_CODE);
                 long idTrips = mCursor.getLong(NUM_COLUMN_IDTRIPS);
-                MyLocation location = new MyLocation(id,latidute,longitude,speed,timeCode,idTrips);
-
-        return location;
+            MyLocation location = new MyLocation(id,latidute,longitude,speed,timeCode,idTrips);
+            return location;
+        }
+        return null;
     }
     private class OpenHelper extends SQLiteOpenHelper {
 

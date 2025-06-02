@@ -123,6 +123,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                         }
                     }.start();
                     timer.start();
+                    startTimeAvSp = System.currentTimeMillis();
                     startTime = System.currentTimeMillis();
                     startTripBut.setText("Завершить поездку");
                 } else {                                       // Конец поездки
@@ -137,7 +138,6 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         });
         dbSQLite = new DBTrip(getContext());
 //        dbSQLite.deleteTableLocation();
-//        dbSQLite.deleteTableTrips();
         ArrayList<Trip> arr = new ArrayList<>(dbSQLite.selectAllTrips());
         if (!arr.isEmpty()) {
             idTrip = arr.get(arr.size() - 1).getId() + 1;
@@ -255,7 +255,6 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             updateMaxSpeed();
             if( ((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > HomeFragment.MinDistanceDif)) ) {
             dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
-            startTimeAvSp = System.currentTimeMillis();
             j++;
             } else if(distanceDif != 0 && j == 0) {
                 dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
@@ -327,7 +326,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         return distance;
     }
     public int calculateAverageSpeed() {
-        return tripAverageSpeed = (int) ((tripDistance / (double) endTimeAvSp - startTimeAvSp ) * 3600000);
+        return tripAverageSpeed = (int) ((tripDistance / (double) tripTime ) * 3600000);
     }
     public void calculateMaxSpeed() {
         if ( tripMaxSpeed < speed) tripMaxSpeed = (int) speed;
