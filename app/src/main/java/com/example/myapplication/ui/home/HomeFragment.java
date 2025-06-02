@@ -49,6 +49,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     TextView timeTV;
     TextView distanceTV;
     Button startTripBut;
+    TextView speedTV;
     DBTrip dbSQLite;
     private FragmentHomeBinding binding;
     LocationManager locationManager;
@@ -90,7 +91,9 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        TextView textView = binding.textHome;
+        speedTV = binding.speed;
+        speedTV.setText("\nspeed: " + 0.0);
+
         startTripBut = binding.startTrip;
         timer = new Timer();
         i = 0;
@@ -168,14 +171,19 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 lastLng = currentLongitude;
                 lastTimeStamp = curTimeStamp;//"latitude: " + currentLatitude + "\nlongitude: " + currentLongitude +
                 if (i <= 15 && speed > 5) {
-                    textView.setText("\nspeed: " + 0.0);
+                    speedTV.setText("\nspeed: " + 0.0);
                     return;
 
-                }
-                textView.setText("\nspeed: " + speed);
+                }else speedTV.setText("\nspeed: " + speed);
                 calculateMaxSpeed();
             }
         };
+        TextView button = binding.secretBut;
+        button.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "You tapped secret but",Toast.LENGTH_SHORT).show();
+            SecretDialogFragment dialogFragment = new SecretDialogFragment();
+            dialogFragment.show(getActivity().getSupportFragmentManager(), "Trip name dialog");
+        });
         return root;
     }
 

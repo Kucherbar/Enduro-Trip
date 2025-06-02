@@ -75,9 +75,9 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
     DrivingRouter drivingRouter;
     DrivingOptions drivingOptions;
     VehicleOptions vehicleOptions;
-    DrivingSession.DrivingRouteListener routeListener;
     InputListener inputListener = null;
     DrivingSession drivingSession;
+    DrivingSession.DrivingRouteListener drivingRouteListener;
     PlacemarkMapObject currentPlacemark;
     MapObjectCollection mapObjects = null;
     ArrayList<RequestPoint> buildPoints;
@@ -158,6 +158,7 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
             }
         };
         mapView.getMap().addInputListener(inputListener);
+        Toast.makeText(getContext(),"Постройте маршрут тапом",Toast.LENGTH_SHORT).show();
 
         drivingRouter =  DirectionsFactory.getInstance().createDrivingRouter(DrivingRouterType.ONLINE);
         drivingOptions = new DrivingOptions().setRoutesCount(1);
@@ -186,7 +187,7 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
 
         public void showRoute() {
 
-            drivingSession = drivingRouter.requestRoutes(buildPoints, drivingOptions, vehicleOptions,new DrivingSession.DrivingRouteListener() {
+            drivingSession = drivingRouter.requestRoutes(buildPoints, drivingOptions, vehicleOptions, drivingRouteListener = new DrivingSession.DrivingRouteListener() {
                 @Override
                 public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
                     polyline = new Polyline(( list.get(0).getGeometry().getPoints()));
