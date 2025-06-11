@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:textStyle="bold"
         android:textSize="20dp"
-        android:text="Введите название поездки" />
+        android:text="@string/add_name" />
 
     <EditText
         android:id="@+id/tripname"
@@ -22,6 +22,6 @@
         android:layout_marginTop="24dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="Название поездки"
+        android:hint="@string/trip_name_tint"
         android:typeface="sans" />
 </LinearLayout>

@@ -27,6 +27,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.myapplication.GPSHelpers;
 import com.example.myapplication.DBTrip;
 import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.Trip;
 import com.example.myapplication.databinding.FragmentSpeedometerBinding;
 
@@ -56,7 +57,7 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
     int tripMaxSpeed = 0;
     int tripAverageSpeed = 0;
     String tripDate = "";
-    static String tripName = "Нет названия";
+    static String tripName;
     double speed;
 
 
@@ -86,7 +87,7 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
         binding = FragmentSpeedometerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         speedTV = binding.speed;
-        speedTV.setText(0 + "");
+        tripName = getString(R.string.trip);
 
         startTripBut = binding.startTrip;
         tripTimer = new Timer();
@@ -99,7 +100,7 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
                     lastLatitude = currentLatitude;
                     lastLongitude = currentLongitude;
                     MyDialogFragment dialogFragment = new MyDialogFragment();
-                    dialogFragment.show(getActivity().getSupportFragmentManager(), "Новая поездка");
+                    dialogFragment.show(getActivity().getSupportFragmentManager(), getString(R.string.new_trip));
                     calculateTimer = new CountDownTimer(Integer.MAX_VALUE, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
@@ -120,14 +121,14 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
                     tripTimer.start();
                     startTimeAvSp = System.currentTimeMillis();
                     startTime = System.currentTimeMillis();
-                    startTripBut.setText("Завершить поездку");
+                    startTripBut.setText(R.string.stop_trip);
                     idTrip = dbSQLite.insertTrip(tripName, (int) (tripDistance), tripTime, tripAverageSpeed, tripMaxSpeed, tripDate);
 
                 } else {                                       // Конец поездки
                     MainActivity.butChecker++;
                     tripTimer.cancel();
                     endTime = System.currentTimeMillis();
-                    startTripBut.setText("Начать поездку");
+                    startTripBut.setText(getString(R.string.start_trip));
                     tripTimer.onFinish();
                     calculateTimer.cancel();
                 }
@@ -171,9 +172,9 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
             }
         };
         binding.secretBut.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Вы нажали секретную кнопку", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.secret_tap, Toast.LENGTH_SHORT).show();
             SecretDialogFragment dialogFragment = new SecretDialogFragment();
-            dialogFragment.show(getActivity().getSupportFragmentManager(), "Пасхалка");
+            dialogFragment.show(getActivity().getSupportFragmentManager(), getString(R.string.secret));
         });
         return root;
     }
@@ -191,7 +192,7 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
     public void onStart() {
         super.onStart();
         if (MainActivity.butChecker % 2 == 0) {
-            binding.startTrip.setText("Завершить поездку");
+            binding.startTrip.setText(getString(R.string.stop_trip));
             tripTimer.start();
         }
     }
@@ -246,7 +247,6 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
         lastLatitude = currentLatitude = 0;
         lastLongitude = currentLongitude = 0;
         timeTV = binding.time;
-        timeTV.setText("0м 0с");
         SpeedometerFragment.setTripName(tripName);
         tripDistance = 0.0;
         tripAverageSpeed = 0;

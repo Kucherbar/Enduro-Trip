@@ -30,7 +30,7 @@
         android:layout_marginTop="680dp"
         android:backgroundTint="@color/dark_gray"
         android:fontFamily="@font/montserrat_alternates_bold"
-        android:text="Начать поездку"
+        android:text="@string/start_trip"
         android:textColor="@color/blackLess"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,7 @@
             android:layout_marginBottom="73dp"
             android:layout_toEndOf="@+id/speed"
             android:fontFamily="@font/montserrat_alternates_medium"
-            android:text="кm/ч"
+            android:text="@string/value"
             android:textColor="@color/more_dark_gray"
             android:textSize="26dp" />
 
@@ -74,7 +74,7 @@
             android:layout_marginStart="48dp"
             android:layout_marginBottom="68dp"
             android:fontFamily="@font/montserrat_alternates_extrabold"
-            android:text="0"
+            android:text="@string/start_value"
             android:textColor="@color/black"
             android:textSize="40dp" />
 
@@ -86,7 +86,7 @@
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="0dp"
             android:fontFamily="@font/montserrat_alternates_extrabold"
-            android:text="Текущая скорость"
+            android:text="@string/current_speed"
             android:textColor="@color/black"
             android:textSize="24dp" />
     </RelativeLayout>
@@ -123,7 +123,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="21dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="Средняя скорость"
+                android:text="@string/average_speed"
                 android:textColor="@color/blackLess"
                 android:textSize="20dp" />
 
@@ -137,7 +137,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="84dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="0"
+                android:text="@string/start_value"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 
@@ -151,7 +151,7 @@
                 android:layout_marginTop="84dp"
                 android:layout_toEndOf="@+id/averageSpeed"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="км/ч"
+                android:text="@string/value"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 
@@ -173,7 +173,7 @@
                 android:layout_marginStart="54dp"
                 android:layout_marginTop="12dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="Время"
+                android:text="@string/time"
                 android:textColor="@color/blackLess"
                 android:textSize="20dp" />
 
@@ -188,7 +188,7 @@
                 android:layout_marginTop="41dp"
                 android:layout_marginEnd="53dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="0м 0с"
+                android:text="@string/start_time_value"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 
@@ -220,7 +220,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="21dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="Макс скорость"
+                android:text="@string/max_speed"
                 android:textColor="@color/blackLess"
                 android:textSize="20dp" />
 
@@ -234,7 +234,7 @@
                 android:layout_marginTop="58dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
                 android:textColor="@color/black"
-                android:text="0"
+                android:text="@string/start_value"
                 android:textSize="25dp" />
 
             <TextView
@@ -247,7 +247,7 @@
                 android:layout_marginTop="58dp"
                 android:layout_toEndOf="@+id/maxSpeed"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="км/ч"
+                android:text="@string/value"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 
@@ -270,7 +270,7 @@
                 android:layout_marginStart="23dp"
                 android:layout_marginTop="13dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="Расстояние"
+                android:text="@string/distance"
                 android:textColor="@color/blackLess"
                 android:textSize="20dp" />
 
@@ -284,7 +284,7 @@
                 android:layout_marginStart="54dp"
                 android:layout_marginTop="42dp"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="0.0"
+                android:text="@string/start_distance_value"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 
@@ -298,7 +298,7 @@
                 android:layout_marginTop="41dp"
                 android:layout_toEndOf="@+id/distance"
                 android:fontFamily="@font/montserrat_alternates_extrabold"
-                android:text="км"
+                android:text="@string/distance_value"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 

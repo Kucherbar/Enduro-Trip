@@ -135,7 +135,7 @@ public class MapFragment extends Fragment implements DrivingSession.DrivingRoute
                     showRoute();
                     tapChecker++;
                 } else if (tapChecker % 2 != 0) {
-                    mapObjects.remove(polylineRoute);
+                    if (mapObjects.isValid()) mapObjects.remove(polylineRoute);
                     tapChecker++;
                 }
                 ;
@@ -147,7 +147,7 @@ public class MapFragment extends Fragment implements DrivingSession.DrivingRoute
             }
         };
         mapView.getMap().addInputListener(inputListener);
-        Toast.makeText(getContext(), "Постройте маршрут тапом", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), getString(R.string.make_route), Toast.LENGTH_SHORT).show();
 
         drivingRouter = DirectionsFactory.getInstance().createDrivingRouter(DrivingRouterType.ONLINE);
         drivingOptions = new DrivingOptions().setRoutesCount(1);
@@ -170,7 +170,7 @@ public class MapFragment extends Fragment implements DrivingSession.DrivingRoute
 
             @Override
             public void onDrivingRoutesError(@NonNull Error error) {
-                Toast.makeText(getContext(), "ошибка", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.error), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.DBTrip;
 import com.example.myapplication.MyTripAdapter;
+import com.example.myapplication.R;
 import com.example.myapplication.Trip;
 import com.example.myapplication.databinding.FragmentTripsBinding;
 import com.example.myapplication.databinding.TripItemBinding;
@@ -30,7 +31,7 @@ public class TripsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        Toast.makeText(getContext(),"Нажмите чтобы увидеть поездку", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.show_trip_route, Toast.LENGTH_SHORT).show();
         dbSQLite = new DBTrip(getContext());
         binding = FragmentTripsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -44,7 +45,7 @@ public class TripsFragment extends Fragment {
                 TripItemBinding tripItemBinding = TripItemBinding.bind(view);
                 long tripID = Integer.valueOf(tripItemBinding.tripID.getText() + "");
                 if (dbSQLite.selectLocations(tripID).size() == 0) {
-                    Toast.makeText(getContext(),"У поездки нет точек локации", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.no_trip_points, Toast.LENGTH_SHORT).show();
                     return;
                 }
 

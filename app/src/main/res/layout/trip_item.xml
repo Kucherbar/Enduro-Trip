@@ -24,7 +24,7 @@
         android:layout_marginStart="16dp"
         android:fontFamily="@font/montserrat_alternates_medium"
         android:textColor="@color/blackLess"
-        android:text="Расстояние:"
+        android:text="@string/distance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
 
@@ -45,7 +45,7 @@
         android:layout_height="36dp"
         android:fontFamily="@font/montserrat_alternates_medium"
         android:textColor="@color/blackLess"
-        android:text="Время:"
+        android:text="@string/time"
         app:layout_constraintStart_toEndOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
 
@@ -65,7 +65,7 @@
         android:layout_height="36dp"
         android:fontFamily="@font/montserrat_alternates_medium"
         android:textColor="@color/blackLess"
-        android:text="Макс скорость:"
+        android:text="@string/max_speed"
         app:layout_constraintStart_toEndOf="@+id/textView10"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
 
@@ -86,7 +86,7 @@
         android:id="@+id/textView14"
         android:layout_width="75dp"
         android:layout_height="36dp"
-        android:text="Ср скорость:"
+        android:text="@string/average_speed"
         app:layout_constraintStart_toEndOf="@+id/textView12"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
 

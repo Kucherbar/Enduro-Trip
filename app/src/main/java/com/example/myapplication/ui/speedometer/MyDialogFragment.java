@@ -37,7 +37,7 @@ public class MyDialogFragment extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cansel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        SpeedometerFragment.setTripName("Нет названия");
+                        SpeedometerFragment.setTripName(getString(R.string.trip));
                     }
                 });
 

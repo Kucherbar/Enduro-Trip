@@ -7,6 +7,36 @@
     <string name="cansel">Отмена</string>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_name">Введите название поездки</string>
+    <string name="trip_name_tint">Название поездки</string>
+    <string name="current_speed">Текущая скорость</string>
+    <string name="start_trip">Начать поездку</string>
+    <string name="value">кm/ч</string>
+    <string name="start_speed_value">0</string>
+    <string name="average_speed">Средняя скорость</string>
+    <string name="max_speed">Макс скорость</string>
+    <string name="distance_value">км</string>
+    <string name="start_distance_value">0.0</string>
+    <string name="start_time_value">0м 0с</string>
+    <string name="start_value">0</string>
+    <string name="time">Время</string>
+    <string name="distance">Расстояние</string>
+    <string name="trip_list">Список поездок</string>
+    <string name="trip">Поездка</string>
+    <string name="new_trip">Новая поездка</string>
+    <string name="stop_trip">Завершить поездку</string>
+    <string name="secret_tap">Вы нажали секретную кнопку</string>
+    <string name="secret">Пасхалка</string>
+    <string name="make_route">Постройте маршрут тапом</string>
+    <string name="error">ошибка</string>
+    <string name="speed">"Скорость - "</string>
+    <string name="flag">Flag</string>
+    <string name="point">Point</string>
+    <string name="show_trip_route">Нажмите чтобы увидеть поездку</string>
+    <string name="no_trip_points">У поездки нет точек локации</string>
+    <string name="access_to_gps">Необходимо предоставить доступ к GPS</string>
+    <string name="turn_upp_gps">Необходимо включить GPS</string>
+    <string name="map_kit_key">b50b7f6f-0802-4e93-9b90-67010efde0e7</string>
     https://fonts-online.ru/fonts/pusia
     https://fonts-online.ru/fonts/share-tech-mono-bulgarian-cyrillic
     https://fonts-online.ru/fonts/comic-mono

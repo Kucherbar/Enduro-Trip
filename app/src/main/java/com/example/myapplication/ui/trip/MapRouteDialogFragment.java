@@ -59,7 +59,7 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
         MapObjectTapListener listener = new MapObjectTapListener() {
             @Override
             public boolean onMapObjectTap(@NonNull MapObject mapObject, @NonNull Point point) {
-                Toast.makeText(getContext(),"Скорость - " + mapObject.getUserData().toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),getString(R.string.speed) + mapObject.getUserData().toString(),Toast.LENGTH_SHORT).show();
                 return false;
             }
         };
@@ -93,8 +93,8 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
         IconStyle iconPointStyle = new IconStyle()
                 .setAnchor(new PointF(0.5f,0.6f)).setScale(0.3f);
 
-        placemarkFinish.useCompositeIcon().setIcon("Flag",flagImg, iconFlagStyle);
-        placemarkFinish.useCompositeIcon().setIcon("Point", pointImg, iconPointStyle);
+        placemarkFinish.useCompositeIcon().setIcon(getString(R.string.flag),flagImg, iconFlagStyle);
+        placemarkFinish.useCompositeIcon().setIcon(getString(R.string.point), pointImg, iconPointStyle);
         //
 
 

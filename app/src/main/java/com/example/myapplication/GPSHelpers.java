@@ -27,12 +27,12 @@ public class GPSHelpers {
     @SuppressLint("MissingPermission")
     public static void chekGPS(FragmentActivity context, LocationManager locationManager, LocationListener locationListener) {
         if (!checkGPSPerms(context)) {
-            Toast.makeText(context, "Необходимо предоставить доступ к GPS", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.access_to_gps, Toast.LENGTH_LONG).show();
         }
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 if (!locationManager.isLocationEnabled()) {
-                    Toast.makeText(context, "Необходимо включить GPS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.turn_upp_gps, Toast.LENGTH_SHORT).show();
                 } else {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                 }
