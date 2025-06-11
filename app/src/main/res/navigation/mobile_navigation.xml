@@ -9,16 +9,21 @@
         android:id="@+id/navigation_home"
         android:name="com.example.myapplication.ui.home.HomeFragment"
         android:label="@string/title_home"
+        android:fontFamily="@font/montserrat_alternates_bold"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
+        android:fontFamily="@font/montserrat_alternates_bold"
+
         android:name="com.example.myapplication.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
+        android:fontFamily="@font/montserrat_alternates_bold"
+
         android:name="com.example.myapplication.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
