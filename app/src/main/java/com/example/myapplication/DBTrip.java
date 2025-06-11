@@ -49,7 +49,7 @@ public class DBTrip {
         mDataBase = mOpenHelper.getWritableDatabase();
     }
 
-    public long insert(double latitude,double longitude,int speed,int timeCode,long idTrips) {
+    public long insertLocation(double latitude, double longitude, int speed, int timeCode, long idTrips) {
         ContentValues cv=new ContentValues();
         cv.put(COLUMN_LATITUDE, latitude);
         cv.put(COLUMN_LONGITUDE, longitude);
@@ -58,7 +58,7 @@ public class DBTrip {
         cv.put(COLUMN_IDTRIPS,idTrips);
         return mDataBase.insert(TABLE_LOCATION, null, cv);
     }
-    public long insert(String name,int distance,int time,int averageSpeed,int maxSpeed,String date) {
+    public long insertTrip(String name, int distance, int time, int averageSpeed, int maxSpeed, String date) {
         ContentValues cv= new ContentValues();
         cv.put(COLUMN_NAME, name);
         cv.put(COLUMN_DISTANCE, distance);
@@ -69,7 +69,7 @@ public class DBTrip {
         return mDataBase.insert(TABLE_TRIPS, null, cv);
     }
 
-    public int update(Trip trip) {
+    public int updateTrip(Trip trip) {
         ContentValues cv=new ContentValues();
         cv.put(COLUMN_NAME, trip.getName());
         cv.put(COLUMN_DISTANCE, trip.getDistance());
@@ -80,7 +80,7 @@ public class DBTrip {
         return mDataBase.update(TABLE_TRIPS, cv, COLUMN_ID + " = ?",new String[] { String.valueOf(trip.getId())});
     }
 
-    public int update(MyLocation location) {
+    public int updateMyLocation(MyLocation location) {
         ContentValues cv=new ContentValues();
         cv.put(COLUMN_LATITUDE, location.getLatidute());
         cv.put(COLUMN_LONGITUDE, location.getLongitude());

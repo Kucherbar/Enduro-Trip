@@ -1,16 +1,14 @@
 package com.example.myapplication.ui.home;
-import android.Manifest;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -22,25 +20,21 @@ import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 
-
+import com.example.myapplication.GPSHelpers;
 import com.example.myapplication.DBTrip;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.Trip;
 import com.example.myapplication.databinding.FragmentHomeBinding;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.CacheRequest;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class HomeFragment extends Fragment implements SensorEventListener {
-    public static final double EARTH_RADIUS =  6371;
+    public static final double EARTH_RADIUS = 6371;
     public static double MinDistanceDif = 0.02;
     public static final double MINDISTANCEDIF_VALUE_LOW = 0.01;
     public static final double MINDISTANCEDIF_VALUE_HIGH = 0.2;
@@ -58,11 +52,11 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public final static int timeInterval = 1000;
 
     long idTrip;
-    int tripTime;
-    double tripDistance;
+    int tripTime = 0;
+    double tripDistance = 0;
     int tripMaxSpeed = 0;
-    int tripAverageSpeed;
-    String tripDate;
+    int tripAverageSpeed = 0;
+    String tripDate = "";
     static String tripName = "Нет названия";
     double speed;
 
@@ -80,12 +74,12 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     long lastTimeStamp;
     long curTimeStamp;
     double distanceDif;
-    Timer timer;
+    CountDownTimer tripTimer;
     CountDownTimer calculateTimer;
 
     int i;
     int j;
-    int b;
+    int badCoordSec;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -96,7 +90,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         speedTV.setText(0 + "");
 
         startTripBut = binding.startTrip;
-        timer = new Timer();
+        tripTimer = new Timer();
         i = 0;
         startTripBut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,50 +100,41 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                     lastLatitude = currentLatitude;
                     lastLongitude = currentLongitude;
                     MyDialogFragment dialogFragment = new MyDialogFragment();
-                    dialogFragment.show(getActivity().getSupportFragmentManager(), "Trip name dialog");
-                    calculateTimer = new CountDownTimer(Integer.MAX_VALUE,1000) {
+                    dialogFragment.show(getActivity().getSupportFragmentManager(), "Новая поездка");
+                    calculateTimer = new CountDownTimer(Integer.MAX_VALUE, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
                             i++;
+                            //калибровка приходящих локаций
                             if (i == 30) HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_LOW;
                             calculateTime();
-                            if (b > 0) {
-                                b--;
+                            if (badCoordSec > 0) {
+                                badCoordSec--;
                                 return;
                             }
                             calculateDistance();
                             calculateAverageSpeed();
                         }
-
                         @Override
-                        public void onFinish() {
-
-                        }
+                        public void onFinish() {}
                     }.start();
-                    timer.start();
+                    tripTimer.start();
                     startTimeAvSp = System.currentTimeMillis();
                     startTime = System.currentTimeMillis();
                     startTripBut.setText("Завершить поездку");
+                    idTrip = dbSQLite.insertTrip(tripName, (int) (tripDistance), tripTime, tripAverageSpeed, tripMaxSpeed, tripDate);
+
                 } else {                                       // Конец поездки
                     MainActivity.butChecker++;
-                    timer.cancel();
+                    tripTimer.cancel();
                     endTime = System.currentTimeMillis();
                     startTripBut.setText("Начать поездку");
-                    timer.onFinish();
+                    tripTimer.onFinish();
                     calculateTimer.cancel();
                 }
             }
         });
         dbSQLite = new DBTrip(getContext());
-//        dbSQLite.deleteTableLocation();
-        ArrayList<Trip> arr = new ArrayList<>(dbSQLite.selectAllTrips());
-        if (!arr.isEmpty()) {
-            idTrip = arr.get(arr.size() - 1).getId() + 1;
-        }
-        else{
-            idTrip = 1;
-        }
-
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -164,76 +149,59 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 curTimeStamp = System.currentTimeMillis()/1000;
                 long time = curTimeStamp - lastTimeStamp;
                 if (time > 2500) {
-                    b = 4;
+                    badCoordSec = 4;
                 }
 //                double s = speed;
 //                s = s - s % 1;
-                double distance1 = calculateDistance(lastLt, lastLng,currentLatitude,currentLongitude) * 1000;
-
-                Double j  = distance1/ time ;//м.с
+                double distance1 = calculateDistance(lastLt, lastLng, currentLatitude, currentLongitude) * 1000;
+                Double j = distance1 / time;//м.с
                 j = j * 3.6;
                 if (time < 1) return;
-                speed =  ((int) (j*10))/10.0;
+                speed = ((int) (j * 10)) / 10.0;
 
                 lastLt = currentLatitude;
                 lastLng = currentLongitude;
                 lastTimeStamp = curTimeStamp;//"latitude: " + currentLatitude + "\nlongitude: " + currentLongitude +
-                if (b > 0) return;
+                if (badCoordSec > 0) return;
 
                 if (i <= 15 && speed > 5) {
                     speedTV.setText(0 + "");
                     return;
 
-                }else speedTV.setText((int) speed + "");
+                } else speedTV.setText((int) speed + "");
                 calculateMaxSpeed();
             }
         };
-        TextView button = binding.secretBut;
-        button.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "You tapped secret but",Toast.LENGTH_SHORT).show();
+        binding.secretBut.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Вы нажали секретную кнопку", Toast.LENGTH_SHORT).show();
             SecretDialogFragment dialogFragment = new SecretDialogFragment();
-            dialogFragment.show(getActivity().getSupportFragmentManager(), "Trip name dialog");
+            dialogFragment.show(getActivity().getSupportFragmentManager(), "Пасхалка");
         });
         return root;
     }
 
     @Override
     public void onResume() {
-
         super.onResume();
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getContext(),"GPS isn't working", Toast.LENGTH_LONG).show();
-            return;
-
-        }
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (!locationManager.isLocationEnabled()) {
-                    Toast.makeText(getContext(),"location isn't turned up", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        FragmentActivity context = getActivity();
+        GPSHelpers.chekGPS(context, locationManager, locationListener);
     }
+
+
 
     @Override
     public void onStart() {
         super.onStart();
         if (MainActivity.butChecker % 2 == 0) {
             binding.startTrip.setText("Завершить поездку");
-            timer.start();
+            tripTimer.start();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        timer.cancel();
+        tripTimer.cancel();
     }
 
     class Timer extends CountDownTimer {
@@ -241,33 +209,25 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         public Timer() {
             super(Integer.MAX_VALUE, timeInterval);
         }
+
         @Override
+        @SuppressLint("MissingPermission")
         public void onTick(long millisUntilFinished) {
             if (lastLongitude == 0 && lastLatitude == 0) {
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
+                if (!GPSHelpers.checkGPSPerms(getActivity())) return;
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 lastLatitude = currentLatitude = location.getLatitude();
                 lastLongitude = currentLongitude = location.getLongitude();
-                return;
             }
             updateTime();
             updateDistance();
             updateAverageSpeed();
             updateMaxSpeed();
-            if( ((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > HomeFragment.MinDistanceDif)) ) {
-            dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
-            j++;
-            } else if(distanceDif != 0 && j == 0) {
-                dbSQLite.insert(currentLatitude,currentLongitude,(int)speed,tripTime / 1000,idTrip);
+            if (((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > HomeFragment.MinDistanceDif))) {
+                dbSQLite.insertLocation(currentLatitude, currentLongitude, (int) speed, tripTime / 1000, idTrip);
+                j++;
+            } else if (distanceDif != 0 && j == 0) {
+                dbSQLite.insertLocation(currentLatitude, currentLongitude, (int) speed, tripTime / 1000, idTrip);
                 j++;
             }
         }
@@ -278,8 +238,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             tripDate = new java.util.Date().toString();
             Scanner sc = new Scanner(tripDate);
             tripDate = sc.next() + " " + sc.next() + " " + sc.next();
-            dbSQLite.insert(tripName,(int) (tripDistance),tripTime,tripAverageSpeed,tripMaxSpeed,tripDate);
-            idTrip = idTrip + 1;
+            Trip trip = new Trip(idTrip, tripName, (int) (tripDistance), tripTime, tripAverageSpeed, tripMaxSpeed, tripDate);
+            dbSQLite.updateTrip(trip);
             nullifyAll();
         }
     }
@@ -289,7 +249,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         lastLongitude = currentLongitude = 0;
         timeTV = binding.time;
         timeTV.setText("0м 0с");
-        HomeFragment.setTripName("Нет названия");
+        HomeFragment.setTripName(tripName);
         tripDistance = 0.0;
         tripAverageSpeed = 0;
         tripMaxSpeed = 0;
@@ -298,6 +258,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         updateAverageSpeed();
         updateMaxSpeed();
     }
+
     public double calculateDistance() {
 
 
@@ -319,6 +280,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         }
         return tripDistance;
     }
+
     public double calculateDistance(double lastLatitude, double lastLongitude, double currentLatitude, double currentLongitude) {
 //        if (!(currentLatitude == 0 || currentLongitude == 0 || lastLongitude == 0 || lastLatitude == 0))
 //
@@ -335,15 +297,19 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         }
         return distance;
     }
+
     public int calculateAverageSpeed() {
-        return tripAverageSpeed = (int) ((tripDistance / (double) tripTime ) * 3600000);
+        return tripAverageSpeed = (int) ((tripDistance / (double) tripTime) * 3600000);
     }
+
     public void calculateMaxSpeed() {
-        if ( tripMaxSpeed < speed) tripMaxSpeed = (int) speed;
+        if (tripMaxSpeed < speed) tripMaxSpeed = (int) speed;
     }
+
     public int calculateTime() {
-        return tripTime = (int)(System.currentTimeMillis() - startTime);
+        return tripTime = (int) (System.currentTimeMillis() - startTime);
     }
+
     public void updateDistance() {
         if (distanceDif > HomeFragment.MinDistanceDif) return;
         distanceTV = binding.distance;
@@ -351,23 +317,28 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         distanceText = ((distanceText * 1000 - distanceText * 1000 % 1) / 1000);
         distanceTV.setText(distanceText + "");
     }
+
     public void updateAverageSpeed() {
         averageSpeedTV = binding.averageSpeed;
         averageSpeedTV.setText(tripAverageSpeed + "");
 
     }
+
     public void updateMaxSpeed() {
         maxSpeedTV = binding.maxSpeed;
         maxSpeedTV.setText(tripMaxSpeed + "");
     }
+
     public void updateTime() {
         timeTV = binding.time;
-        String hour,minute,sec;
-        if (tripTime >= 3600000 && tripTime / 3600000 < 10) hour = (tripTime / 3600000 % 24)+ "ч ";
-        else if (tripTime >= 3600000 && tripTime / 3600000 >= 10) hour = (tripTime / 3600000 % 24) + "ч ";
+        String hour, minute, sec;
+        if (tripTime >= 3600000 && tripTime / 3600000 < 10) hour = (tripTime / 3600000 % 24) + "ч ";
+        else if (tripTime >= 3600000 && tripTime / 3600000 >= 10)
+            hour = (tripTime / 3600000 % 24) + "ч ";
         else hour = "";
         if (tripTime >= 60000 && tripTime / 60000 < 10) minute = (tripTime / 60000 % 60) + "м ";
-        else if (tripTime >= 60000 && tripTime / 60000 >= 10) minute = (tripTime / 60000 % 60) + "м ";
+        else if (tripTime >= 60000 && tripTime / 60000 >= 10)
+            minute = (tripTime / 60000 % 60) + "м ";
         else minute = "0м ";
         if (tripTime >= 1000 && (tripTime / 1000 % 60) < 10) sec = (tripTime / 1000 % 60) + "с";
         else if (tripTime >= 1000 && tripTime / 1000 >= 10) sec = (tripTime / 1000 % 60) + "с";
@@ -391,11 +362,10 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
     public static void setTripName(String tripname) {
         HomeFragment.tripName = tripname;
     }
 
-    public static void main(String[] args) {
-    }
 
 }

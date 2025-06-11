@@ -58,14 +58,12 @@ public class MapRouteDialogFragment extends DialogFragment implements DrivingSes
 
         dbSQLite = new DBTrip(getContext());
 
-
-
         ArrayList<MyLocation> arr = dbSQLite.selectLocations(Long.valueOf(getTag()));
 
         MapObjectTapListener listener = new MapObjectTapListener() {
             @Override
             public boolean onMapObjectTap(@NonNull MapObject mapObject, @NonNull Point point) {
-                Toast.makeText(getContext(),"speed was " + mapObject.getUserData().toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),"Скорость - " + mapObject.getUserData().toString(),Toast.LENGTH_SHORT).show();
                 return false;
             }
         };

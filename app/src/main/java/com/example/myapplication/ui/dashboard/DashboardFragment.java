@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.myapplication.DBTrip;
+import com.example.myapplication.GPSHelpers;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.MyLocation;
 import com.example.myapplication.R;
@@ -68,7 +69,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class  DashboardFragment extends Fragment implements DrivingSession.DrivingRouteListener, SensorEventListener {
+public class DashboardFragment extends Fragment implements DrivingSession.DrivingRouteListener, SensorEventListener {
     private MapView mapView;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -92,26 +93,24 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-            binding = FragmentDashboardBinding.inflate(inflater, container, false);
-            MapKitFactory.initialize(getContext());
-            mapView = binding.mapView;
-            dbSQLite = new DBTrip(getContext());
-            if (cameraOnStart != null)  mapView.getMap().move(cameraOnStart);
-            else {
+        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        MapKitFactory.initialize(getContext());
+        mapView = binding.mapView;
+        dbSQLite = new DBTrip(getContext());
+        if (cameraOnStart != null) mapView.getMap().move(cameraOnStart);
+        else {
 
-                MyLocation location = dbSQLite.selectLastLocation();
-                if (!(location == null)) {
-                    Point point = new Point(location.getLatidute(), location.getLongitude());
-                    mapView.getMap().move(new CameraPosition(point, 8.0f, 150.0f, 30.0f));
-                }
+            MyLocation location = dbSQLite.selectLastLocation();
+            if (!(location == null)) {
+                Point point = new Point(location.getLatidute(), location.getLongitude());
+                mapView.getMap().move(new CameraPosition(point, 8.0f, 150.0f, 30.0f));
             }
-            if (polyline != null && tapChecker % 2 != 0) {
-                polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
-                polylineRoute.setStrokeColor(MainActivity.polylineColor);
-            }
-//        MapKit mapKit = MapKitFactory.getInstance();
+        }
+        if (polyline != null && tapChecker % 2 != 0) {
+            polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
+            polylineRoute.setStrokeColor(MainActivity.polylineColor);
+        }
 
-//        mapKit.createLocationManager().requestSingleUpdate(locationListener);
         mapObjects = mapView.getMap().getMapObjects();
         ImageProvider enduroImg = ImageProvider.fromResource(getContext(), R.drawable.ic_enduro_on_two_wheels);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -126,8 +125,11 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
                 currentPlacemark = mapView.getMap().getMapObjects().addPlacemark(new Point(location.getLatitude(), location.getLongitude()));
                 currentPlacemark.setIcon(enduroImg);
                 currentPlacemark.setIconStyle(iconStyle);
-                if(i == 0 && cameraOnStart == null) mapView.getMap().move(new CameraPosition(new Point(location.getLatitude(), location.getLongitude())
-                        , 14.0f, 150.0f, 30.0f));
+                if (i == 0 && cameraOnStart == null) {
+                    mapView.getMap().move(new CameraPosition(
+                        new Point(location.getLatitude(), location.getLongitude()), 14f, 150f, 30f
+                    ));
+                }
                 i++;
             }
         };
@@ -135,9 +137,12 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
         inputListener = new InputListener() {
             @Override
             public void onMapTap(@NonNull Map map, @NonNull Point point) {
-                if (currentPlacemark != null && tapChecker % 2 ==  0) {
+                if (currentPlacemark != null && tapChecker % 2 == 0) {
                     buildPoints = new ArrayList<>();
-                    buildPoints.add(new RequestPoint((new Point(currentPlacemark.getGeometry().getLatitude(), currentPlacemark.getGeometry().getLongitude())),
+                    Point geometry = currentPlacemark.getGeometry();
+                    geometry = new Point(geometry.getLatitude(), geometry.getLongitude());
+                    buildPoints.add(new RequestPoint(
+                            geometry,
                             RequestPointType.WAYPOINT,
                             null,
                             null,
@@ -149,10 +154,11 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
                             null));
                     showRoute();
                     tapChecker++;
-                }else if (tapChecker % 2 !=  0) {
+                } else if (tapChecker % 2 != 0) {
                     mapObjects.remove(polylineRoute);
                     tapChecker++;
-                };
+                }
+                ;
             }
 
             @Override
@@ -161,49 +167,34 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
             }
         };
         mapView.getMap().addInputListener(inputListener);
-        Toast.makeText(getContext(),"Постройте маршрут тапом",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Постройте маршрут тапом", Toast.LENGTH_SHORT).show();
 
-        drivingRouter =  DirectionsFactory.getInstance().createDrivingRouter(DrivingRouterType.ONLINE);
+        drivingRouter = DirectionsFactory.getInstance().createDrivingRouter(DrivingRouterType.ONLINE);
         drivingOptions = new DrivingOptions().setRoutesCount(1);
         vehicleOptions = new VehicleOptions().setVehicleType(VehicleType.MOTO);
 
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getContext(),"GPS isn't working", Toast.LENGTH_LONG).show();
-
-        }
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (!locationManager.isLocationEnabled()) {
-                    Toast.makeText(getContext(),"location isn't turned up", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        GPSHelpers.chekGPS(getActivity(), locationManager, locationListener);
         View root = binding.getRoot();
-            return root;
-        }
+        return root;
+    }
 
-        public void showRoute() {
+    public void showRoute() {
 
-            drivingSession = drivingRouter.requestRoutes(buildPoints, drivingOptions, vehicleOptions, drivingRouteListener = new DrivingSession.DrivingRouteListener() {
-                @Override
-                public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
-                    polyline = new Polyline(( list.get(0).getGeometry().getPoints()));
-                    polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
-                    polylineRoute.setStrokeColor(MainActivity.polylineColor);
-                }
+        drivingSession = drivingRouter.requestRoutes(buildPoints, drivingOptions, vehicleOptions, drivingRouteListener = new DrivingSession.DrivingRouteListener() {
+            @Override
+            public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
+                polyline = new Polyline((list.get(0).getGeometry().getPoints()));
+                polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
+                polylineRoute.setStrokeColor(MainActivity.polylineColor);
+            }
 
-                @Override
-                public void onDrivingRoutesError(@NonNull Error error) {
-                    Toast.makeText(getContext(),"ошибка", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+            @Override
+            public void onDrivingRoutesError(@NonNull Error error) {
+                Toast.makeText(getContext(), "ошибка", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -226,14 +217,6 @@ public class  DashboardFragment extends Fragment implements DrivingSession.Drivi
         binding = null;
     }
 
-    Session session;
-    Point ROUTE_START_LOCATION = new Point(47.229410,39.718281);
-    Point ROUTE_END_LOCATION = new Point(47.214004,39.794605);
-    Point SCREEN_CENTER = new Point(
-            (ROUTE_START_LOCATION.getLatitude()
-                    + ROUTE_END_LOCATION.getLatitude())/2,
-            (ROUTE_START_LOCATION.getLongitude()
-                    + ROUTE_END_LOCATION.getLongitude())/2);
     @Override
     public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
 
