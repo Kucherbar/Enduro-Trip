@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         speedTV = binding.speed;
-        speedTV.setText("\nspeed: " + 0.0);
+        speedTV.setText(0 + "");
 
         startTripBut = binding.startTrip;
         timer = new Timer();
@@ -171,10 +171,10 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 lastLng = currentLongitude;
                 lastTimeStamp = curTimeStamp;//"latitude: " + currentLatitude + "\nlongitude: " + currentLongitude +
                 if (i <= 15 && speed > 5) {
-                    speedTV.setText("\nspeed: " + 0.0);
+                    speedTV.setText(0 + "");
                     return;
 
-                }else speedTV.setText("\nspeed: " + speed);
+                }else speedTV.setText((int) speed + "");
                 calculateMaxSpeed();
             }
         };
@@ -278,9 +278,9 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         lastLatitude = currentLatitude = 0;
         lastLongitude = currentLongitude = 0;
         timeTV = binding.time;
-        timeTV.setText("00:00");
+        timeTV.setText("0м 0с");
         HomeFragment.setTripName("Нет названия");
-        tripDistance = 0;
+        tripDistance = 0.0;
         tripAverageSpeed = 0;
         tripMaxSpeed = 0;
         distanceTV = binding.distance;
@@ -347,21 +347,21 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
     }
     public void updateMaxSpeed() {
-        maxSpeedTV = binding.MaxSpeed;
+        maxSpeedTV = binding.maxSpeed;
         maxSpeedTV.setText(tripMaxSpeed + "");
     }
     public void updateTime() {
         timeTV = binding.time;
         String hour,minute,sec;
-        if (tripTime >= 3600000 && tripTime / 3600000 < 10) hour = "0" + (tripTime / 3600000 % 24)+ ":";
-        else if (tripTime >= 3600000 && tripTime / 3600000 >= 10) hour = (tripTime / 3600000 % 24) + ":";
+        if (tripTime >= 3600000 && tripTime / 3600000 < 10) hour = (tripTime / 3600000 % 24)+ "ч ";
+        else if (tripTime >= 3600000 && tripTime / 3600000 >= 10) hour = (tripTime / 3600000 % 24) + "ч ";
         else hour = "";
-        if (tripTime >= 60000 && tripTime / 60000 < 10) minute = "0" + (tripTime / 60000 % 60) + ":";
-        else if (tripTime >= 60000 && tripTime / 60000 >= 10) minute = (tripTime / 60000 % 60) + ":";
-        else minute = "00:";
-        if (tripTime >= 1000 && (tripTime / 1000 % 60) < 10) sec = "0" + (tripTime / 1000 % 60);
-        else if (tripTime >= 1000 && tripTime / 1000 >= 10) sec = (tripTime / 1000 % 60) + "";
-        else sec = "00";
+        if (tripTime >= 60000 && tripTime / 60000 < 10) minute = (tripTime / 60000 % 60) + "м ";
+        else if (tripTime >= 60000 && tripTime / 60000 >= 10) minute = (tripTime / 60000 % 60) + "м ";
+        else minute = "0м ";
+        if (tripTime >= 1000 && (tripTime / 1000 % 60) < 10) sec = (tripTime / 1000 % 60) + "с";
+        else if (tripTime >= 1000 && tripTime / 1000 >= 10) sec = (tripTime / 1000 % 60) + "с";
+        else sec = "0";
         timeTV.setText(hour + minute + sec);
     }
 

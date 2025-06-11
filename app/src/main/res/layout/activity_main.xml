@@ -6,14 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="611dp"
-        android:layout_height="1009dp"
-        app:srcCompat="@drawable/ic_gray_fon"
-        tools:layout_editor_absoluteX="-123dp"
-        tools:layout_editor_absoluteY="-92dp" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:background="?android:attr/windowBackground"

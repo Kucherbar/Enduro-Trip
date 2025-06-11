@@ -33,13 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     public static int butChecker = 1;
     public static int onFirstLocation = 0;
-    public static boolean checker;
     @SuppressLint("ResourceAsColor")
     public static int polylineColor = (R.color.green);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
         MapKitFactory.setApiKey("b50b7f6f-0802-4e93-9b90-67010efde0e7");
         if (getSupportActionBar() != null) {
