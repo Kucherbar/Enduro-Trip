@@ -237,6 +237,11 @@ public class SpeedometerFragment extends Fragment implements SensorEventListener
             tripDate = new java.util.Date().toString();
             Scanner sc = new Scanner(tripDate);
             tripDate = sc.next() + " " + sc.next() + " " + sc.next();
+            if(dbSQLite.selectLocations(idTrip).size() == 0) {
+                nullifyAll();
+                Toast.makeText(getContext(), getString(R.string.trip_isnt_saved),Toast.LENGTH_LONG).show();
+                return;
+            }
             Trip trip = new Trip(idTrip, tripName, (int) (tripDistance), tripTime, tripAverageSpeed, tripMaxSpeed, tripDate);
             dbSQLite.updateTrip(trip);
             nullifyAll();
