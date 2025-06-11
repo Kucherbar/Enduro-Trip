@@ -37,6 +37,7 @@
     <string name="access_to_gps">Необходимо предоставить доступ к GPS</string>
     <string name="turn_upp_gps">Необходимо включить GPS</string>
     <string name="trip_isnt_saved">Поездка не сохранена, так как у неё нет точек локации</string>
+    <string name="route_not_formed">Маршрут не сформировался</string>
     https://fonts-online.ru/fonts/pusia
     https://fonts-online.ru/fonts/share-tech-mono-bulgarian-cyrillic
     https://fonts-online.ru/fonts/comic-mono

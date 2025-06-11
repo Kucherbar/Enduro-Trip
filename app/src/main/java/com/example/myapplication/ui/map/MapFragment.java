@@ -163,6 +163,11 @@ public class MapFragment extends Fragment implements DrivingSession.DrivingRoute
         drivingSession = drivingRouter.requestRoutes(buildPoints, drivingOptions, vehicleOptions, drivingRouteListener = new DrivingSession.DrivingRouteListener() {
             @Override
             public void onDrivingRoutes(@NonNull List<DrivingRoute> list) {
+                if (list.size() == 0) {
+                    tapChecker++;
+                    Toast.makeText(getContext(),getString(R.string.route_not_formed),Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 polyline = new Polyline((list.get(0).getGeometry().getPoints()));
                 polylineRoute = mapView.getMap().getMapObjects().addPolyline(polyline);
                 polylineRoute.setStrokeColor(MainActivity.polylineColor);
