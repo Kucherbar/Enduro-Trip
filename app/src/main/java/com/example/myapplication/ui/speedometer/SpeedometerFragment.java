@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.home;
+package com.example.myapplication.ui.speedometer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,12 +28,11 @@ import com.example.myapplication.GPSHelpers;
 import com.example.myapplication.DBTrip;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.Trip;
-import com.example.myapplication.databinding.FragmentHomeBinding;
+import com.example.myapplication.databinding.FragmentSpeedometerBinding;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
-public class HomeFragment extends Fragment implements SensorEventListener {
+public class SpeedometerFragment extends Fragment implements SensorEventListener {
     public static final double EARTH_RADIUS = 6371;
     public static double MinDistanceDif = 0.02;
     public static final double MINDISTANCEDIF_VALUE_LOW = 0.01;
@@ -45,7 +44,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     Button startTripBut;
     TextView speedTV;
     DBTrip dbSQLite;
-    private FragmentHomeBinding binding;
+    private @NonNull FragmentSpeedometerBinding binding;
     LocationManager locationManager;
     LocationListener locationListener;
 
@@ -84,7 +83,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentSpeedometerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         speedTV = binding.speed;
         speedTV.setText(0 + "");
@@ -106,7 +105,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                         public void onTick(long millisUntilFinished) {
                             i++;
                             //калибровка приходящих локаций
-                            if (i == 30) HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_LOW;
+                            if (i == 30) SpeedometerFragment.MinDistanceDif = SpeedometerFragment.MINDISTANCEDIF_VALUE_LOW;
                             calculateTime();
                             if (badCoordSec > 0) {
                                 badCoordSec--;
@@ -135,14 +134,13 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             }
         });
         dbSQLite = new DBTrip(getContext());
-
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 //                speed = location.getSpeed();
                 MainActivity.onFirstLocation += 1;
                 if (MainActivity.onFirstLocation == 1) {
-                    HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_HIGH;
+                    SpeedometerFragment.MinDistanceDif = SpeedometerFragment.MINDISTANCEDIF_VALUE_HIGH;
                 }
                 currentLatitude = location.getLatitude();
                 currentLongitude = location.getLongitude();
@@ -223,7 +221,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             updateDistance();
             updateAverageSpeed();
             updateMaxSpeed();
-            if (((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > HomeFragment.MinDistanceDif))) {
+            if (((lastLatitude != currentLatitude && lastLongitude != currentLongitude) && (distanceDif > SpeedometerFragment.MinDistanceDif))) {
                 dbSQLite.insertLocation(currentLatitude, currentLongitude, (int) speed, tripTime / 1000, idTrip);
                 j++;
             } else if (distanceDif != 0 && j == 0) {
@@ -249,7 +247,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         lastLongitude = currentLongitude = 0;
         timeTV = binding.time;
         timeTV.setText("0м 0с");
-        HomeFragment.setTripName(tripName);
+        SpeedometerFragment.setTripName(tripName);
         tripDistance = 0.0;
         tripAverageSpeed = 0;
         tripMaxSpeed = 0;
@@ -271,7 +269,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         double y = (lat2Rad - lat1Rad);
         if (!(currentLatitude == 0 || currentLongitude == 0 || lastLongitude == 0 || lastLatitude == 0)) {
             distanceDif = Math.sqrt(x * x + y * y) * EARTH_RADIUS;
-            if (distanceDif > HomeFragment.MinDistanceDif) {
+            if (distanceDif > SpeedometerFragment.MinDistanceDif) {
                 tripDistance = tripDistance + distanceDif;
                 lastLatitude = currentLatitude;
                 lastLongitude = currentLongitude;
@@ -311,7 +309,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     }
 
     public void updateDistance() {
-        if (distanceDif > HomeFragment.MinDistanceDif) return;
+        if (distanceDif > SpeedometerFragment.MinDistanceDif) return;
         distanceTV = binding.distance;
         double distanceText = tripDistance;
         distanceText = ((distanceText * 1000 - distanceText * 1000 % 1) / 1000);
@@ -364,7 +362,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     }
 
     public static void setTripName(String tripname) {
-        HomeFragment.tripName = tripname;
+        SpeedometerFragment.tripName = tripname;
     }
 
 

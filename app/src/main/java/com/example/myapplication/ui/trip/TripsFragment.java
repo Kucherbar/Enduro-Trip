@@ -1,6 +1,5 @@
-package com.example.myapplication.ui.notifications;
+package com.example.myapplication.ui.trip;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,32 +7,22 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
-import androidx.work.Data;
 
 import com.example.myapplication.DBTrip;
-import com.example.myapplication.MainActivity;
-import com.example.myapplication.MyLocation;
 import com.example.myapplication.MyTripAdapter;
-import com.example.myapplication.R;
 import com.example.myapplication.Trip;
-import com.example.myapplication.databinding.FragmentNotificationsBinding;
+import com.example.myapplication.databinding.FragmentTripsBinding;
 import com.example.myapplication.databinding.TripItemBinding;
-import com.example.myapplication.ui.dashboard.DashboardFragment;
 
 import java.util.ArrayList;
-import java.util.Map;
 
-public class NotificationsFragment extends Fragment {
+public class TripsFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentTripsBinding binding;
     ListView lv;
     ArrayList<Trip> list = new ArrayList<>();
     DBTrip dbSQLite;
@@ -43,7 +32,7 @@ public class NotificationsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         Toast.makeText(getContext(),"Нажмите чтобы увидеть поездку", Toast.LENGTH_SHORT).show();
         dbSQLite = new DBTrip(getContext());
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentTripsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         lv = binding.lv;
         list = dbSQLite.selectAllTrips();

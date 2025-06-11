@@ -1,8 +1,7 @@
-package com.example.myapplication.ui.notifications;
+package com.example.myapplication.ui.trip;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,16 +10,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.myapplication.DBTrip;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.MyLocation;
 import com.example.myapplication.R;
-import com.example.myapplication.databinding.FragmentDashboardBinding;
 import com.example.myapplication.databinding.MapRouteBinding;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.directions.driving.DrivingRoute;
 import com.yandex.mapkit.directions.driving.DrivingSession;

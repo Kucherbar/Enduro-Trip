@@ -10,8 +10,8 @@
         android:layout_width="112dp"
         android:layout_height="33dp"
         android:layout_marginStart="16dp"
-        android:typeface="sans"
-        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/blackLess"
         android:layout_marginTop="16dp"
         android:text="Title"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,8 +22,8 @@
         android:layout_width="112dp"
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
-        android:typeface="sans"
-        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/blackLess"
         android:text="Расстояние:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
@@ -33,9 +33,9 @@
         android:layout_width="112dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        android:typeface="sans"
         android:text="TextView"
-        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
@@ -43,8 +43,8 @@
         android:id="@+id/textView10"
         android:layout_width="87dp"
         android:layout_height="36dp"
-        android:textStyle="bold"
-        android:typeface="sans"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/blackLess"
         android:text="Время:"
         app:layout_constraintStart_toEndOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
@@ -52,8 +52,8 @@
     <TextView
         android:id="@+id/time1"
         android:layout_width="87dp"
-        android:textStyle="bold"
-        android:typeface="sans"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/black"
         android:layout_height="30dp"
         android:text="TextView"
         app:layout_constraintStart_toEndOf="@+id/distance1"
@@ -61,10 +61,10 @@
 
     <TextView
         android:id="@+id/textView12"
-        android:textStyle="bold"
         android:layout_width="77dp"
         android:layout_height="36dp"
-        android:typeface="sans"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/blackLess"
         android:text="Макс скорость:"
         app:layout_constraintStart_toEndOf="@+id/textView10"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
@@ -73,17 +73,17 @@
         android:id="@+id/maxSpeed1"
         android:layout_width="77dp"
         android:layout_height="31dp"
-        android:textStyle="bold"
-        android:typeface="sans"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/black"
         android:layout_marginTop="36dp"
         android:text="TextView"
         app:layout_constraintStart_toEndOf="@+id/time1"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
 
     <TextView
-        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/blackLess"
         android:id="@+id/textView14"
-        android:typeface="sans"
         android:layout_width="75dp"
         android:layout_height="36dp"
         android:text="Ср скорость:"
@@ -92,19 +92,19 @@
 
     <TextView
         android:id="@+id/averageSpeed1"
-        android:typeface="sans"
         android:layout_width="75dp"
-        android:textStyle="bold"
         android:layout_height="31dp"
         android:layout_marginTop="36dp"
+        android:fontFamily="@font/montserrat_alternates_medium"
         android:text="TextView"
+        android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/maxSpeed1"
         app:layout_constraintTop_toBottomOf="@+id/titleName" />
 
     <TextView
-        android:typeface="sans"
         android:id="@+id/date"
-        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_alternates_medium"
+        android:textColor="@color/blackLess"
         android:layout_width="110dp"
         android:layout_height="32dp"
         android:layout_marginTop="16dp"

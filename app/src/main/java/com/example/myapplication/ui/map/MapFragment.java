@@ -1,41 +1,27 @@
-package com.example.myapplication.ui.dashboard;
+package com.example.myapplication.ui.map;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Parcelable;
-import android.se.omapi.Session;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 
 import com.example.myapplication.DBTrip;
 import com.example.myapplication.GPSHelpers;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.MyLocation;
 import com.example.myapplication.R;
-import com.example.myapplication.databinding.FragmentDashboardBinding;
-import com.yandex.mapkit.Animation;
-import com.yandex.mapkit.MapKit;
+import com.example.myapplication.databinding.FragmentMapBinding;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.RequestPoint;
 import com.yandex.mapkit.RequestPointType;
@@ -44,32 +30,26 @@ import com.yandex.mapkit.directions.driving.DrivingOptions;
 import com.yandex.mapkit.directions.driving.DrivingRoute;
 import com.yandex.mapkit.directions.driving.DrivingRouter;
 import com.yandex.mapkit.directions.driving.DrivingRouterType;
-import com.yandex.mapkit.directions.driving.DrivingSection;
 import com.yandex.mapkit.directions.driving.DrivingSession;
 import com.yandex.mapkit.directions.driving.VehicleOptions;
 import com.yandex.mapkit.directions.driving.VehicleType;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
-import com.yandex.mapkit.location.SubscriptionSettings;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.IconStyle;
 import com.yandex.mapkit.map.InputListener;
 import com.yandex.mapkit.map.Map;
-import com.yandex.mapkit.map.MapObject;
 import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.map.PolylineMapObject;
 import com.yandex.mapkit.mapview.MapView;
-import com.yandex.mapkit.places.panorama.IconImageFactory;
-import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.runtime.Error;
 import com.yandex.runtime.image.ImageProvider;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-public class DashboardFragment extends Fragment implements DrivingSession.DrivingRouteListener, SensorEventListener {
+public class MapFragment extends Fragment implements DrivingSession.DrivingRouteListener, SensorEventListener {
     private MapView mapView;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -89,11 +69,11 @@ public class DashboardFragment extends Fragment implements DrivingSession.Drivin
     static int tapChecker;
     int i;
 
-    private FragmentDashboardBinding binding;
+    private FragmentMapBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentMapBinding.inflate(inflater, container, false);
         MapKitFactory.initialize(getContext());
         mapView = binding.mapView;
         dbSQLite = new DBTrip(getContext());

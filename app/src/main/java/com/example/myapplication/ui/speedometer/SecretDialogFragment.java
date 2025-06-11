@@ -1,18 +1,15 @@
-package com.example.myapplication.ui.home;
+package com.example.myapplication.ui.speedometer;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.myapplication.R;
-import com.example.myapplication.databinding.DialogNameBinding;
 
 public class SecretDialogFragment extends MyDialogFragment{
 

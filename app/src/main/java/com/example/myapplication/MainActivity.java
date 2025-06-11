@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public static int onFirstLocation = 0;
     @SuppressLint("ResourceAsColor")
     public static int polylineColor = (R.color.green);
+    DBTrip dbSQLite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        dbSQLite = new DBTrip(this);
+        insertExampleTrip();
 
         setContentView(R.layout.activity_main);
 
@@ -54,6 +57,17 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController((BottomNavigationView) findViewById(R.id.nav_view), navController);
+    }
+
+    void insertExampleTrip() {
+        if (dbSQLite.selectAllTrips().size()==0) {
+            long trip = dbSQLite.insertTrip("Демо поездка",1,5 ,4,7,"Wed Jun 11");
+            dbSQLite.insertLocation(55.494956, 47.484163, 0,1, trip);
+            dbSQLite.insertLocation(55.493707, 47.484290, 3, 60, trip);
+            dbSQLite.insertLocation(55.493525, 47.479815, 5, 120, trip);
+            dbSQLite.insertLocation(55.493832, 47.479299, 7, 180, trip);
+            dbSQLite.insertLocation(55.493775, 47.477188, 1, 240, trip);
+        }
     }
 
 }
