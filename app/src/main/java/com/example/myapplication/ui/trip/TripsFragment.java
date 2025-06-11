@@ -45,7 +45,7 @@ public class TripsFragment extends Fragment {
                 TripItemBinding tripItemBinding = TripItemBinding.bind(view);
                 long tripID = Integer.valueOf(tripItemBinding.tripID.getText() + "");
                 if (dbSQLite.selectLocations(tripID).size() == 0) {
-                    Toast.makeText(getContext(), R.string.no_trip_points, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.no_trip_points), Toast.LENGTH_SHORT).show();
                     return;
                 }
 

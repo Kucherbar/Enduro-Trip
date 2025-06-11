@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
-        MapKitFactory.setApiKey(getString(R.string.map_kit_key));
+        MapKitFactory.setApiKey("b50b7f6f-0802-4e93-9b90-67010efde0e7");
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
