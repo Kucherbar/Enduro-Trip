@@ -85,6 +85,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
     int i;
     int j;
+    int b;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -111,8 +112,11 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                         public void onTick(long millisUntilFinished) {
                             i++;
                             if (i == 30) HomeFragment.MinDistanceDif = HomeFragment.MINDISTANCEDIF_VALUE_LOW;
-
                             calculateTime();
+                            if (b > 0) {
+                                b--;
+                                return;
+                            }
                             calculateDistance();
                             calculateAverageSpeed();
                         }
@@ -158,10 +162,14 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 currentLatitude = location.getLatitude();
                 currentLongitude = location.getLongitude();
                 curTimeStamp = System.currentTimeMillis()/1000;
+                long time = curTimeStamp - lastTimeStamp;
+                if (time > 2500) {
+                    b = 4;
+                }
 //                double s = speed;
 //                s = s - s % 1;
                 double distance1 = calculateDistance(lastLt, lastLng,currentLatitude,currentLongitude) * 1000;
-                long time = curTimeStamp - lastTimeStamp;
+
                 Double j  = distance1/ time ;//м.с
                 j = j * 3.6;
                 if (time < 1) return;
@@ -170,6 +178,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                 lastLt = currentLatitude;
                 lastLng = currentLongitude;
                 lastTimeStamp = curTimeStamp;//"latitude: " + currentLatitude + "\nlongitude: " + currentLongitude +
+                if (b > 0) return;
+
                 if (i <= 15 && speed > 5) {
                     speedTV.setText(0 + "");
                     return;
